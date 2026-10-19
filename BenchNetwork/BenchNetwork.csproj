@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net462</TargetFramework>
+    <AssemblyName>BenchNetwork</AssemblyName>
+    <RootNamespace>BenchNetwork</RootNamespace>
+    <LangVersion>9.0</LangVersion>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Jotunn's package also adds references to BepInEx, Harmony, Unity and the publicized game assemblies. -->
+    <PackageReference Include="JotunnLib" Version="2.30.2" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <Target Name="DeployToBepInEx" AfterTargets="Build" Condition="'$(BEPINEX_PATH)' != '' And Exists('$(BEPINEX_PATH)/plugins')">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BEPINEX_PATH)/plugins/BenchNetwork" />
+  </Target>
+
+</Project>

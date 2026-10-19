@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <!-- Folder that contains valheim.exe. Jotunn tries common Steam paths when this is left out. -->
+    <VALHEIM_INSTALL>C:\Program Files (x86)\Steam\steamapps\common\Valheim</VALHEIM_INSTALL>
+
+    <!-- Optional: BepInEx folder to reference and deploy into, e.g. an r2modman profile.
+         Defaults to $(VALHEIM_INSTALL)\BepInEx. -->
+    <!-- <BEPINEX_PATH>C:\Users\you\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Default\BepInEx</BEPINEX_PATH> -->
+  </PropertyGroup>
+</Project>

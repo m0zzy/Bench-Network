@@ -1,0 +1,9 @@
+<Project>
+  <!-- Local, untracked machine settings (copy Environment.props.example to Environment.props). -->
+  <Import Project="$(MSBuildThisFileDirectory)Environment.props" Condition="Exists('$(MSBuildThisFileDirectory)Environment.props')" />
+
+  <PropertyGroup>
+    <!-- Let Jotunn's build task generate the publicized game assemblies from VALHEIM_INSTALL. -->
+    <ExecutePrebuild Condition="'$(ExecutePrebuild)' == ''">true</ExecutePrebuild>
+  </PropertyGroup>
+</Project>
