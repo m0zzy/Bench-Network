@@ -21,14 +21,14 @@ With BenchNetwork, stations work together. When two stations' circles touch, the
 form a **network**, and a network can grow as big as you like: each station only has to touch one other
 station in it.
 
-![Three stations in a chain form one network; a station on its own forms its own network](docs/images/linking.svg)
+![Three stations in a chain form one network; a station on its own forms its own network](docs/images/linking.png)
 
 ### Build anywhere in the network
 
 Stand inside any circle of a network and you can build as if every station in that network were right next to
 you. The same goes for removing pieces and repairing them with the hammer.
 
-![Without the mod you need to stand in the forge's circle; with it, the workbench's circle counts too](docs/images/building.svg)
+![Without the mod you need to stand in the forge's circle; with it, the workbench's circle counts too](docs/images/building.png)
 
 ### Repair at any station
 
@@ -36,15 +36,21 @@ At any station, you can repair items that belong to another station in the same 
 counts at its **best upgrade level** in the network, so a level 7 forge anywhere in the network lets you repair
 forge items at the workbench.
 
-![At the workbench you can repair workbench and forge items, but forge recipes still need the forge](docs/images/repair.svg)
+![At the workbench you can repair workbench and forge items, but forge recipes still need the forge](docs/images/repair.png)
 
 ### See what's in a network
 
 Look at any station to see its network and the best level of each station type in it:
 
-![Hover text reading: Network: Workbench 5, Forge 7, Stonecutter](docs/images/hover.svg)
+![Hover text reading: Network: Workbench 5, Forge 7, Stonecutter](docs/images/hover.png)
 
 The line appears only when the station is linked to at least one other station.
+
+### See the whole network while building
+
+While you hold the hammer, the circle of every station in the network you're standing in lights up, so you can
+see exactly where you can build. Press **F7** to turn this on or off at any time; the game confirms with a
+message in the top left. You can change the key in the settings.
 
 ## What's shared and what isn't
 
@@ -95,7 +101,7 @@ To change settings, open the in-game config menu (F1, with
 [ConfigurationManager](https://thunderstore.io/c/valheim/p/Azumatt/Official_BepInEx_ConfigurationManager/)
 installed), or edit `BepInEx/config/m0zzy.BenchNetwork.cfg`.
 
-**On a server, the server's settings win.** Everything except the last two rows below comes from the server
+**On a server, the server's settings win.** Everything except the last four rows below comes from the server
 and is locked for players. Only server admins can change it.
 
 | Setting | Default | What it does |
@@ -107,6 +113,8 @@ and is locked for players. Only server admins can change it.
 | *Station* range per level | `-1` | Extra reach for each upgrade. `-1` keeps the normal amount. |
 | Extra stations | Empty | Stations from other mods that should join networks. See below. |
 | Show network in hover text | On | Shows the network line when you look at a station. |
+| Show network while building | On | Lights up the network's circles while you hold the hammer. |
+| Toggle network circles key | F7 | Key that turns the setting above on or off in game. |
 | Network refresh interval | `2` | How often, in seconds, networks are re-checked while you hold the hammer. Best left alone. |
 
 There are range settings for the **Workbench, Forge, Stonecutter, Artisan table, Black forge** and
@@ -137,3 +145,11 @@ happened, and your `BepInEx/LogOutput.log` file (it is inside your Gale profile 
 ## For developers
 
 How the mod works, how to build it and how releases are made: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+
+## License
+
+BenchNetwork is free and open source under the [MIT License](LICENSE): you can use, change and share it,
+including in modpacks, as long as the license notice stays with it.
+
+BenchNetwork is a fan-made mod and isn't affiliated with or endorsed by Iron Gate or Coffee Stain. Valheim is
+a trademark of its owners.

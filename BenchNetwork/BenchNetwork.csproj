@@ -49,9 +49,18 @@
   <Target Name="ThunderstorePackage" AfterTargets="Build">
     <PropertyGroup>
       <ThunderstoreStaging>$(IntermediateOutputPath)thunderstore/</ThunderstoreStaging>
+      <!-- Mod sites show the packaged README on their own pages, so its repo-relative links become full URLs. -->
+      <RepoRawUrl>https://raw.githubusercontent.com/m0zzy/Bench-Network/main/</RepoRawUrl>
+      <RepoBlobUrl>https://github.com/m0zzy/Bench-Network/blob/main/</RepoBlobUrl>
+      <PackageReadme>$([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)/../README.md'))</PackageReadme>
+      <PackageReadme>$(PackageReadme.Replace('](docs/images/', ']($(RepoRawUrl)docs/images/'))</PackageReadme>
+      <PackageReadme>$(PackageReadme.Replace('src="BenchNetwork/', 'src="$(RepoRawUrl)BenchNetwork/'))</PackageReadme>
+      <PackageReadme>$(PackageReadme.Replace('](docs/', ']($(RepoBlobUrl)docs/'))</PackageReadme>
+      <PackageReadme>$(PackageReadme.Replace('](LICENSE)', ']($(RepoBlobUrl)LICENSE)'))</PackageReadme>
     </PropertyGroup>
     <RemoveDir Directories="$(ThunderstoreStaging)" />
-    <Copy SourceFiles="$(TargetPath);Package/icon.png;../README.md" DestinationFolder="$(ThunderstoreStaging)" />
+    <Copy SourceFiles="$(TargetPath);Package/icon.png;../LICENSE" DestinationFolder="$(ThunderstoreStaging)" />
+    <WriteLinesToFile File="$(ThunderstoreStaging)README.md" Lines="$([MSBuild]::Escape($(PackageReadme)))" Overwrite="true" />
     <WriteLinesToFile File="$(ThunderstoreStaging)manifest.json" Lines="$(ThunderstoreManifest)" Overwrite="true" />
     <ZipDirectory SourceDirectory="$(ThunderstoreStaging)" DestinationFile="$(OutDir)$(AssemblyName)-$(Version).zip" Overwrite="true" />
   </Target>

@@ -197,6 +197,23 @@ namespace BenchNetwork
             return null;
         }
 
+        /// <summary>
+        /// The network whose circles cover the point at the last rebuild, or null. Never rebuilds.
+        /// Overlapping circles always share a network, so at most one network covers a point.
+        /// </summary>
+        public static StationNetwork CachedNetworkAt(Vector3 point)
+        {
+            foreach (StationNetwork network in Networks)
+            {
+                if (network.Covers(point))
+                {
+                    return network;
+                }
+            }
+
+            return null;
+        }
+
         private static void EnsureFresh()
         {
             if (_dirty && ModConfig.Enabled.Value)
