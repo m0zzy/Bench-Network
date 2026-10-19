@@ -1,145 +1,139 @@
-# Bench-Network
+<p align="center"><img src="BenchNetwork/Package/icon.png" width="112" alt=""></p>
 
-A Valheim mod (BepInEx + Jotunn) that links crafting stations into networks.
+<h1 align="center">BenchNetwork</h1>
 
-- Each crafting station type has its own build range, set in the config and synced from the server.
-- Two stations are linked when their range circles overlap (`distance < rangeA + rangeB`). Links chain, so
-  A–B–C form one network even if A and C don't overlap.
-- Anywhere inside a network's circles you can **build, remove and hammer-repair** pieces as if every station
-  type in the network were in range.
-- At any station in a network you can **repair items** whose station type is in that network at the recipe's
-  minimum level.
-- Each station type counts at the level of its best-upgraded instance in the network.
-- A station's hover text lists its network, e.g. `Network: Workbench 5, Forge 7, Stonecutter`.
-- **Crafting is not shared.** Recipes still need the real station.
+<p align="center">
+  Link your crafting stations together in Valheim.<br>
+  Build anywhere in your base without putting a spare forge in every corner.
+</p>
 
-## Install
+<p align="center"><a href="https://github.com/m0zzy/Bench-Network/releases/latest"><b>Download the latest release</b></a></p>
 
-Install on the **server and every client**. Build and repair checks run on each client, so a server-only
-install can't work, and Jotunn refuses to connect a client whose version differs from the server's
-(major.minor).
+---
 
-Requirements: [BepInExPack Valheim](https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/) and
-[Jotunn](https://thunderstore.io/c/valheim/p/ValheimModding/Jotunn/) 2.30.2 or newer.
+## What it does
 
-### With Gale (or r2modman)
+Normally every crafting station has a circle around it, and you can only build a piece while you stand inside
+the circle of the station that piece needs. Big bases end up with extra forges and stonecutters dotted around
+just to keep building.
 
-Download `BenchNetwork-<version>.zip` from the repository's
-[Releases](https://github.com/m0zzy/Bench-Network/releases) page. It is a Thunderstore-format package
-(`manifest.json`, `icon.png`, `README.md`, `BenchNetwork.dll`); don't unzip it.
+With BenchNetwork, stations work together. When two stations' circles touch, they **link**. Linked stations
+form a **network**, and a network can grow as big as you like: each station only has to touch one other
+station in it.
 
-1. In Gale, open the Valheim profile you play on.
-2. Use Gale's **Import → Local mod** and pick the zip. Gale reads the manifest and installs BepInExPack and
-   Jotunn as dependencies if the profile doesn't have them.
-3. Every player and the server need the same build. To give it to the other players, send them the zip to
-   import the same way, or export the profile from Gale and share the code or file.
+![Three stations in a chain form one network; a station on its own forms its own network](docs/images/linking.svg)
 
-### Manually
+### Build anywhere in the network
 
-Copy `BenchNetwork.dll` into `BepInEx/plugins/BenchNetwork/`.
+Stand inside any circle of a network and you can build as if every station in that network were right next to
+you. The same goes for removing pieces and repairing them with the hammer.
 
-## Configuration
+![Without the mod you need to stand in the forge's circle; with it, the workbench's circle counts too](docs/images/building.svg)
 
-File: `BepInEx/config/m0zzy.BenchNetwork.cfg`. Entries marked *synced* come from the server and are locked
-for clients. Server admins can change them in game (e.g. with ConfigurationManager); everyone else gets the
-server's values.
+### Repair at any station
 
-| Section | Entry | Default | Synced | Notes |
-| --- | --- | --- | --- | --- |
-| General | Enabled | `true` | yes | Off = vanilla: original ranges, no linking. |
-| General | Link building | `true` | yes | Build, remove and hammer-repair pieces through the network. |
-| General | Link repair | `true` | yes | Repair items through the network at a station. |
-| General | Extra stations | *(empty)* | yes | Modded stations that join networks; see below. |
-| Ranges | *Station* range | `-1` | yes | Level 1 build range. `-1` keeps the game's value. |
-| Ranges | *Station* range per level | `-1` | yes | Range added per upgrade level. `-1` keeps the game's value. |
-| Client | Network refresh interval | `2` | no | Seconds between rebuilds while the hammer is out. |
-| Client | Show network in hover text | `true` | no | Show or hide the network line. |
+At any station, you can repair items that belong to another station in the same network. Each station type
+counts at its **best upgrade level** in the network, so a level 7 forge anywhere in the network lets you repair
+forge items at the workbench.
 
-Range entries exist for the Workbench (`$piece_workbench`), Forge (`$piece_forge`), Stonecutter
-(`$piece_stonecutter`), Artisan table (`$piece_artisanstation`), Black forge (`$piece_blackforge`) and
-Galdr table (`$piece_magetable`).
+![At the workbench you can repair workbench and forge items, but forge recipes still need the forge](docs/images/repair.svg)
 
-**Extra stations** is a comma-separated list of station name tokens (the station's `m_name`). Each entry can
-carry a range and a range per level: `$piece_mystation` keeps that station's own range,
-`$piece_mystation:30:4` sets range 30 plus 4 per level. Only listed types (and the six above) join networks.
+### See what's in a network
 
-## How it works
+Look at any station to see its network and the best level of each station type in it:
 
-| Piece | Hook | What it does |
+![Hover text reading: Network: Workbench 5, Forge 7, Stonecutter](docs/images/hover.svg)
+
+The line appears only when the station is linked to at least one other station.
+
+## What's shared and what isn't
+
+| | Shared through the network |
+| --- | :---: |
+| Building pieces | ✅ |
+| Removing pieces | ✅ |
+| Repairing pieces with the hammer | ✅ |
+| Repairing items at a station | ✅ if the network's station is upgraded enough |
+| Crafting | ❌ go to the real station |
+| The area around your base where enemies can't spawn | ❌ unchanged |
+| Upgrade placement, roof and fire requirements | ❌ unchanged |
+
+## Installing
+
+### With Gale
+
+1. Download `BenchNetwork-<version>.zip` from the
+   [latest release](https://github.com/m0zzy/Bench-Network/releases/latest). Don't unzip it.
+2. In Gale, open your Valheim profile and choose **Import → Local mod**, then pick the zip.
+   Gale adds BepInEx and Jotunn for you if you don't have them.
+3. Start Valheim from Gale.
+
+r2modman works the same way through its **Import local mod** option.
+
+<details>
+<summary>Installing by hand</summary>
+
+1. Install [BepInExPack Valheim](https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/) and
+   [Jotunn](https://thunderstore.io/c/valheim/p/ValheimModding/Jotunn/).
+2. Unzip the release and copy `BenchNetwork.dll` into `BepInEx/plugins/BenchNetwork/` in your Valheim folder.
+
+</details>
+
+### Playing with friends
+
+- **Everyone needs it**, including the server, and everyone needs the **same version**. If versions don't
+  match, the game tells you when you join and won't connect. Update everyone to the same release.
+- **Dedicated servers** need BepInEx, Jotunn and BenchNetwork installed, the same as players.
+- **Single player** just works.
+
+## Settings
+
+Most people don't need to change anything. Out of the box everything is on and every station keeps its normal
+range.
+
+To change settings, open the in-game config menu (F1, with
+[ConfigurationManager](https://thunderstore.io/c/valheim/p/Azumatt/Official_BepInEx_ConfigurationManager/)
+installed), or edit `BepInEx/config/m0zzy.BenchNetwork.cfg`.
+
+**On a server, the server's settings win.** Everything except the last two rows below comes from the server
+and is locked for players. Only server admins can change it.
+
+| Setting | Default | What it does |
 | --- | --- | --- |
-| Range override | `CraftingStation.Start` postfix | Sets `m_rangeBuild` / `m_extraRangePerLevel` from the config and resizes the circle (`m_areaMarker`'s `CircleProjector`). The game's values are kept so turning the mod off restores them. Reapplied to all loaded stations when the config changes or syncs. |
-| Network manager | `StationNetworks` | Union-find over `CraftingStation.m_allStations`, using each station's effective range (`m_rangeBuild + m_extraRangePerLevel × (level − 1)`). Caches each network's members, circles, types and best level per type. Rebuilds when a station starts or is destroyed, when an upgrade (`StationExtension`) appears or disappears (plus one more rebuild 2.5 s later, after the game re-counts levels), when the config changes, and every *refresh interval* while the hammer is equipped. |
-| Build / remove | `CraftingStation.HaveBuildStationInRange` postfix | If the game finds no station, returns the best station of the required type from a network whose circles cover the point. `Player.HaveRequirements` (placing), `Player.CheckCanRemovePiece` and `Player.Repair` (hammer) all call this method. |
-| Item repair | `InventoryGui.CanRepair` postfix | If the game says no: takes the player's current station, finds its network, and allows the repair when the network has the recipe's repair or crafting station at `m_minStationLevel` or above. `HaveRepairableItems` and `RepairOneItem` both call `CanRepair`. |
-| Hover text | `CraftingStation.GetHoverText` postfix | Appends the network line, read from the cache only. Hidden for stations that aren't linked to anything. |
+| Enabled | On | Turns the whole mod off. Everything goes back to the normal game. |
+| Link building | On | Build, remove and hammer-repair anywhere in a network. |
+| Link repair | On | Repair items from other stations in the network. |
+| *Station* range | `-1` | How far the station's circle reaches. `-1` keeps the normal range. Bigger circles link more easily. |
+| *Station* range per level | `-1` | Extra reach for each upgrade. `-1` keeps the normal amount. |
+| Extra stations | Empty | Stations from other mods that should join networks. See below. |
+| Show network in hover text | On | Shows the network line when you look at a station. |
+| Network refresh interval | `2` | How often, in seconds, networks are re-checked while you hold the hammer. Best left alone. |
 
-Each patch class is applied on its own: if a game update renames a method, that one feature is turned off
-and an error is logged, and the rest of the mod keeps working.
+There are range settings for the **Workbench, Forge, Stonecutter, Artisan table, Black forge** and
+**Galdr table**. When you change a range, the circle you see around the station grows or shrinks to match.
 
-### Game members used
+<details>
+<summary>Adding stations from other mods</summary>
 
-Confirm these in `assembly_valheim.dll` (dnSpy or ILSpy) after a game update. The mod compiles against the
-publicized assembly, so private members are accessed directly.
+Add each station's internal name, separated by commas, for example `$piece_mystation`. To give it its own
+range, add the range and the range per level after colons: `$piece_mystation:30:4` means a 30 m circle that
+grows 4 m per upgrade. The internal name comes from that mod; its author or its files will have it.
 
-- `CraftingStation`: `m_name`, `m_rangeBuild`, `m_extraRangePerLevel`, `m_areaMarker`, `m_allStations`
-  (static), `Start()`, `OnDestroy()`, `GetLevel()`, `GetHoverText()`, `HaveBuildStationInRange(string, Vector3)`
-  (returns `CraftingStation`)
-- `StationExtension`: `Awake()`, `OnDestroy()`
-- `CircleProjector`: `m_radius`, `m_nrOfSegments`
-- `InventoryGui.CanRepair(ItemDrop.ItemData)`, and that `HaveRepairableItems` / `RepairOneItem` call it
-- `Player.m_localPlayer`, `Player.GetCurrentCraftingStation()`, `Player.InPlaceMode()`
-- `Player.HaveRequirements`, `Player.CheckCanRemovePiece` and `Player.Repair` calling `HaveBuildStationInRange`
-- `ObjectDB.GetRecipe(ItemDrop.ItemData)`, `Recipe.m_craftingStation`, `m_repairStation`, `m_minStationLevel`
-- `ItemDrop.ItemData.SharedData.m_canBeReparied` (the game's spelling)
+</details>
 
-Untouched on purpose: the workbench's PlayerBase (spawn blocking) radius, upgrade placement rules, roof,
-exposure and fire checks, and crafting recipes.
+## Good to know
 
-## Known limitation
+- **Only nearby stations count.** The game only loads the world around players. If a network stretches far
+  away, the far part may not count until someone is near it.
+- **Safe to remove.** The mod saves nothing into your world. Pieces you built stay where they are. You just
+  need to be near the right stations again to build more.
+- **Can't join a server?** Check that you have the same BenchNetwork version as the server.
 
-Only stations in loaded areas count. If part of a very large network is in an unloaded area, the network can
-split until that area loads.
+## Problems or ideas?
 
-## Releases
+[Open an issue](https://github.com/m0zzy/Bench-Network/issues). For problems, include what you did, what
+happened, and your `BepInEx/LogOutput.log` file (it is inside your Gale profile folder).
 
-GitHub Actions (`.github/workflows/build.yml`) builds the mod on every push. It downloads the free Valheim
-dedicated server for the game assemblies and BepInExPack for BepInEx, so nothing has to be installed locally.
-Each run keeps the zip as an artifact on the run's page.
+## For developers
 
-To publish a release: **Actions → Build → Run workflow**, pick `main`, enter a version such as `0.1.0`, and
-run it. The workflow builds with that version (plugin, `manifest.json` and zip all match) and creates the
-GitHub release `v0.1.0` with the zip attached. The version must be higher than the last one; Jotunn's version
-check compares major.minor, so bump the minor version (`0.2.0`) for changes everyone must update to.
-
-## Building locally
-
-Only needed if you want to build on your own machine instead of using the workflow.
-
-1. Install the .NET SDK (6 or newer), plus BepInEx in your Valheim folder.
-2. Copy `Environment.props.example` to `Environment.props` and set `VALHEIM_INSTALL` (Jotunn also tries the
-   usual Steam paths if you skip this). Set `BEPINEX_PATH` to build against and deploy into an r2modman
-   profile instead.
-3. `dotnet build -c Release`
-
-On the first build Jotunn's build task writes publicized copies of the game assemblies to
-`Valheim_Data/Managed/publicized_assemblies`. When `BEPINEX_PATH/plugins` exists the DLL is copied to
-`plugins/BenchNetwork/`. Every build also writes the Thunderstore zip next to the DLL.
-
-The version comes from `<Version>` in `BenchNetwork/BenchNetwork.csproj` (or `-p:Version=1.2.3`) and is used
-for the plugin, the manifest and the zip name.
-
-## Test checklist
-
-1. With **Enabled** off, everything behaves like vanilla.
-2. Workbench overlapping a Forge: a sconce can be placed at the Workbench's far edge.
-3. A three-station chain (A–B–C, where A and C don't overlap) works as one network.
-4. Destroying the middle station splits the network.
-5. Repairing a Forge item at the Workbench works only if the network's Forge level is high enough.
-6. Ranges match on a dedicated server with two clients, and a client can't override the server's values.
-7. A station's hover text lists every type in its network with the correct highest level, and updates after
-   a station is added or removed.
-8. A stress base with 50+ stations shows no frame hitches.
-
-## Phase 2 (not done)
-
-- While holding the hammer, highlight every circle in the network the player is standing in.
+How the mod works, how to build it and how releases are made: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).

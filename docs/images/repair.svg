@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="310" viewBox="0 0 800 310" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Repairing items at any station in the network</title>
+  <rect x="1" y="1" width="798" height="308" rx="14" fill="#1c2129" stroke="#2e3540" stroke-width="2"/>
+  <text x="28" y="42" font-size="19" font-weight="600" fill="#f2e6cf">Standing at the workbench</text>
+
+  <circle cx="190" cy="180" r="92" fill="#e8a03c" fill-opacity="0.12" stroke="#e8a03c" stroke-width="2.5"/>
+  <circle cx="335" cy="180" r="80" fill="#e2643f" fill-opacity="0.12" stroke="#e2643f" stroke-width="2.5"/>
+  <g stroke="#1c2129" stroke-width="3">
+    <circle cx="190" cy="180" r="9" fill="#e8a03c"/>
+    <circle cx="335" cy="180" r="9" fill="#e2643f"/>
+  </g>
+  <g font-size="13" text-anchor="middle">
+    <text x="190" y="208" fill="#c9ced6">Workbench</text>
+    <text x="190" y="225" fill="#8b94a3">level 3</text>
+    <text x="335" y="208" fill="#c9ced6">Forge</text>
+    <text x="335" y="225" fill="#8b94a3">level 7</text>
+  </g>
+  <g transform="translate(136 168)">
+    <circle cx="0" cy="-17" r="7" fill="#f2e6cf"/>
+    <rect x="-7" y="-8" width="14" height="22" rx="6" fill="#f2e6cf"/>
+  </g>
+
+  <rect x="470" y="78" width="302" height="200" rx="12" fill="#232934" stroke="#2e3540" stroke-width="1.5"/>
+  <g font-size="14">
+    <text x="492" y="116" font-weight="600" fill="#a6e0a8">✓ Repair workbench items</text>
+    <text x="514" y="136" fill="#8b94a3">Same as the normal game</text>
+    <text x="492" y="172" font-weight="600" fill="#a6e0a8">✓ Repair forge items</text>
+    <text x="514" y="192" fill="#8b94a3">The network has a level 7 forge</text>
+    <text x="492" y="228" font-weight="600" fill="#f0a0a0">✗ Craft forge recipes</text>
+    <text x="514" y="248" fill="#8b94a3">Crafting still needs the real forge</text>
+  </g>
+</svg>

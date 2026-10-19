@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="370" viewBox="0 0 800 370" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Building with and without BenchNetwork</title>
+  <defs>
+    <g id="player">
+      <circle cx="0" cy="-17" r="7" fill="#f2e6cf"/>
+      <rect x="-7" y="-8" width="14" height="22" rx="6" fill="#f2e6cf"/>
+    </g>
+  </defs>
+  <rect x="1" y="1" width="798" height="368" rx="14" fill="#1c2129" stroke="#2e3540" stroke-width="2"/>
+  <text x="28" y="42" font-size="19" font-weight="600" fill="#f2e6cf">Placing a piece that needs a forge</text>
+  <line x1="400" y1="70" x2="400" y2="340" stroke="#2e3540" stroke-width="2"/>
+
+  <!-- left: vanilla -->
+  <text x="208" y="80" font-size="15" font-weight="600" fill="#c9ced6" text-anchor="middle">Normal game</text>
+  <circle cx="160" cy="215" r="95" fill="#e8a03c" fill-opacity="0.10" stroke="#e8a03c" stroke-width="2.5"/>
+  <circle cx="275" cy="215" r="70" fill="#e2643f" fill-opacity="0.13" stroke="#e2643f" stroke-width="2.5"/>
+  <g stroke="#1c2129" stroke-width="3">
+    <circle cx="160" cy="215" r="8" fill="#e8a03c"/>
+    <circle cx="275" cy="215" r="8" fill="#e2643f"/>
+  </g>
+  <g font-size="13" fill="#c9ced6" text-anchor="middle">
+    <text x="160" y="241">Workbench</text>
+    <text x="275" y="241">Forge</text>
+  </g>
+  <use href="#player" x="92" y="218"/>
+  <rect x="34" y="128" width="116" height="28" rx="14" fill="#3a1f22" stroke="#e06060" stroke-width="1.5"/>
+  <text x="92" y="147" font-size="13" font-weight="600" fill="#f0a0a0" text-anchor="middle">✗ Needs a forge</text>
+  <text x="208" y="338" font-size="13" fill="#8b94a3" text-anchor="middle">You're outside the forge's circle, so you can't place it.</text>
+
+  <!-- right: with mod -->
+  <text x="600" y="80" font-size="15" font-weight="600" fill="#c9ced6" text-anchor="middle">With BenchNetwork</text>
+  <circle cx="552" cy="215" r="95" fill="#6cc070" fill-opacity="0.12" stroke="#e8a03c" stroke-width="2.5"/>
+  <circle cx="667" cy="215" r="70" fill="#6cc070" fill-opacity="0.12" stroke="#e2643f" stroke-width="2.5"/>
+  <g stroke="#1c2129" stroke-width="3">
+    <circle cx="552" cy="215" r="8" fill="#e8a03c"/>
+    <circle cx="667" cy="215" r="8" fill="#e2643f"/>
+  </g>
+  <g font-size="13" fill="#c9ced6" text-anchor="middle">
+    <text x="552" y="241">Workbench</text>
+    <text x="667" y="241">Forge</text>
+  </g>
+  <use href="#player" x="484" y="218"/>
+  <rect x="418" y="128" width="132" height="28" rx="14" fill="#1f3322" stroke="#6cc070" stroke-width="1.5"/>
+  <text x="484" y="147" font-size="13" font-weight="600" fill="#a6e0a8" text-anchor="middle">✓ Forge in network</text>
+  <text x="600" y="338" font-size="13" fill="#8b94a3" text-anchor="middle">The whole green area counts, because the circles touch.</text>
+</svg>
