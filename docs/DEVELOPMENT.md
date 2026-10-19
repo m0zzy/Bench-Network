@@ -51,7 +51,7 @@ Station name tokens: `$piece_workbench`, `$piece_forge`, `$piece_stonecutter`, `
 | Network manager | `StationNetworks` | Union-find over `CraftingStation.m_allStations`, using each station's effective range (`m_rangeBuild + m_extraRangePerLevel × (level − 1)`). Caches each network's members, circles, types and best level per type. Rebuilds when a station starts or is destroyed, when an upgrade (`StationExtension`) appears or disappears (plus one more rebuild 2.5 s later, after the game re-counts levels), when the config changes, and every *refresh interval* while the hammer is equipped. |
 | Build / remove | `CraftingStation.HaveBuildStationInRange` postfix | If the game finds no station, returns the best station of the required type from a network whose circles cover the point. `Player.HaveRequirements` (placing), `Player.CheckCanRemovePiece` and `Player.Repair` (hammer) all call this method. |
 | Item repair | `InventoryGui.CanRepair` postfix | If the game says no: takes the player's current station, finds its network, and allows the repair when the network has the recipe's repair or crafting station at `m_minStationLevel` or above. `HaveRepairableItems` and `RepairOneItem` both call `CanRepair`. |
-| Network highlight | `NetworkHighlight` | While `Player.InPlaceMode()`, activates `m_areaMarker` on every member of the network covering the player (cache only) and deactivates them when the player leaves it, changes network or puts the hammer away. Re-activates every frame because the game hides markers on its own timer. Doesn't call `ShowAreaMarker()`, which also marks the station as in use. The toggle key flips the `Show network while building` entry, so the choice is saved. |
+| Network highlight | `NetworkHighlight` | While `Player.InPlaceMode()`, activates `m_areaMarker` on every member of the network covering the player (cache only) and deactivates them when the player leaves it, changes network or puts the hammer away. Re-activates every frame because the game hides markers on its own timer. Doesn't call `ShowAreaMarker()`, which also marks the station as in use. The toggle key flips the `Show network while building` entry, so the choice is saved. In `Outline` style, `LateUpdate` (after `CircleProjector.Update` has placed the ring pieces) hides each piece of a member's ring that lies more than 0.25 m inside another member's circle, leaving the network's outer edge; the pieces are re-activated when the highlight ends. |
 | Hover text | `CraftingStation.GetHoverText` postfix | Appends the network line, read from the cache only. Hidden for stations that aren't linked to anything. |
 
 Each patch class is applied on its own: if a game update renames a method, that one feature is turned off
@@ -71,7 +71,7 @@ member the mod uses directly isn't public. Add new members to its lists when you
   (static), `Start()`, `OnDestroy()`, `GetLevel()`, `GetHoverText()`, `HaveBuildStationInRange(string, Vector3)`
   (returns `CraftingStation`)
 - `StationExtension`: `Awake()`, `OnDestroy()`
-- `CircleProjector`: `m_radius`, `m_nrOfSegments`
+- `CircleProjector`: `m_radius`, `m_nrOfSegments`, and `m_segments` (private, through `GameAccess`)
 - `InventoryGui.CanRepair(ItemDrop.ItemData)`, and that `HaveRepairableItems` / `RepairOneItem` call it
 - `Player.m_localPlayer`, `Player.GetCurrentCraftingStation()`, `Player.InPlaceMode()`, `Character.Message(MessageHud.MessageType, string)`
 - `Console.IsVisible()`, `TextInput.IsVisible()`, `Menu.IsVisible()`, `Chat.instance.HasFocus()` (toggle key is ignored while typing)

@@ -70,6 +70,10 @@ namespace BenchNetwork
 
         public static void Forget(CraftingStation station) => Originals.Remove(station);
 
+        /// <summary>The station's range circle, or null if it has none.</summary>
+        public static CircleProjector MarkerOf(CraftingStation station) =>
+            Originals.TryGetValue(station, out Original original) ? original.Marker : null;
+
         /// <summary>Build range at the given level, using the station's current (possibly overridden) values.</summary>
         public static float EffectiveRange(CraftingStation station, int level) =>
             station.m_rangeBuild + station.m_extraRangePerLevel * Mathf.Max(0, level - 1);

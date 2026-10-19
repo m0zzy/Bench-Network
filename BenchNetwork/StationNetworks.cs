@@ -60,6 +60,32 @@ namespace BenchNetwork
             return false;
         }
 
+        /// <summary>
+        /// True when the point lies well inside the circle of a member other than <paramref name="memberIndex"/>,
+        /// i.e. not on the network's outer edge.
+        /// </summary>
+        public bool InsideOtherMember(int memberIndex, Vector3 point, float margin)
+        {
+            for (int i = 0; i < _circles.Count; i++)
+            {
+                if (i == memberIndex)
+                {
+                    continue;
+                }
+
+                Circle circle = _circles[i];
+                float inner = circle.Range - margin;
+                float dx = point.x - circle.X;
+                float dz = point.z - circle.Z;
+                if (inner > 0f && dx * dx + dz * dz < inner * inner)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>One line per member, for logs: name token, level, range and map position.</summary>
         public void AppendDetails(StringBuilder text)
         {
