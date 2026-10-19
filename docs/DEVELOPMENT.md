@@ -112,8 +112,15 @@ release to Hexium** to skip it for one release. Notes:
 - The upload is listed under Valheim in the categories `Mods` and `Client & Server`; change them in the
   `community-categories` line of the workflow. A category name Hexium doesn't know makes the upload fail.
 - If Hexium accepts the upload but keeps it hidden (for example while it's reviewed), the run shows a warning.
-- Hexium shows the package's `README.md` as the mod page. Its images and links point at this GitHub repository,
-  so they only work for other people if the repository is public.
+- Hexium shows the package's `README.md` as the mod page. The build rewrites the README's repo-relative links
+  to full `github.com` / `raw.githubusercontent.com` URLs on `main`, so the images and links work there as
+  long as the repository is public.
+
+## README diagrams
+
+The diagrams are drawn as SVG in `docs/images/` and shown as PNG, which every mod site displays. After editing
+an SVG, run `docs/images/render.sh` (needs Chromium and Python with Pillow) to re-make the PNGs, and commit
+both.
 
 ## Building locally
 
