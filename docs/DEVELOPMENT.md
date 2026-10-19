@@ -59,8 +59,13 @@ and an error is logged, and the rest of the mod keeps working.
 
 ### Game members used
 
-Confirm these in `assembly_valheim.dll` (dnSpy or ILSpy) after a game update. The mod compiles against the
-publicized assembly, so private members are accessed directly.
+The mod compiles against the publicized assembly, where every member is public. At runtime the real game's
+access rules apply, so **private members must not be used directly**: read them through `GameAccess`
+(reflection), as with `CraftingStation.m_allStations`. The project also sets `AllowUnsafeBlocks`, which marks
+the DLL with `SkipVerification` so Mono skips access checks, as a second line of defence.
+
+`tools/check_game_members.py` runs in CI against the real `assembly_valheim.dll` and fails the build if a
+member the mod uses directly isn't public. Add new members to its lists when you use them.
 
 - `CraftingStation`: `m_name`, `m_rangeBuild`, `m_extraRangePerLevel`, `m_areaMarker`, `m_allStations`
   (static), `Start()`, `OnDestroy()`, `GetLevel()`, `GetHoverText()`, `HaveBuildStationInRange(string, Vector3)`

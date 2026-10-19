@@ -289,7 +289,7 @@ namespace BenchNetwork
             Parent.Clear();
             ByRoot.Clear();
 
-            foreach (CraftingStation station in CraftingStation.m_allStations)
+            foreach (CraftingStation station in GameAccess.AllStations)
             {
                 if (!station || !ModConfig.IsLinkedType(station.m_name))
                 {

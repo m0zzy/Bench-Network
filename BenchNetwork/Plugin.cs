@@ -38,6 +38,7 @@ namespace BenchNetwork
 
             _harmony = new Harmony(PluginGuid);
             ApplyPatches();
+            GameAccess.CheckMembers();
             CommandManager.Instance.AddConsoleCommand(new BenchNetworkCommand());
             Diagnostics.InfoOnChange("settings", ModConfig.Describe());
         }

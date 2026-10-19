@@ -59,7 +59,7 @@ namespace BenchNetwork
 
         public static void ApplyToAll()
         {
-            foreach (CraftingStation station in CraftingStation.m_allStations)
+            foreach (CraftingStation station in GameAccess.AllStations)
             {
                 if (station)
                 {
