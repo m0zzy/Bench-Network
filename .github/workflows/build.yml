@@ -1,0 +1,102 @@
+name: Build
+
+# Every push builds the mod and keeps the zip as a downloadable artifact.
+# To publish a release: Actions -> Build -> Run workflow, and enter a version.
+on:
+  push:
+    branches: ['**']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version, e.g. 0.1.0. Leave empty to build without releasing.'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+env:
+  # Free Valheim dedicated server; it ships the same game assemblies the mod compiles against.
+  VALHEIM_SERVER_APP_ID: '896660'
+  BEPINEX_PACK_VERSION: '5.4.2202'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Check release version
+        if: github.event_name == 'workflow_dispatch' && inputs.version != ''
+        env:
+          VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Version must look like 1.2.3 (got '$VERSION')."
+            exit 1
+          fi
+          if gh release view "v$VERSION" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "::error::Release v$VERSION already exists. Pick a higher version."
+            exit 1
+          fi
+
+      - name: Download Valheim dedicated server
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq lib32gcc-s1 >/dev/null
+          mkdir -p "$RUNNER_TEMP/steamcmd" && cd "$RUNNER_TEMP/steamcmd"
+          curl -fsSL https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz | tar zxf -
+          VALHEIM="$RUNNER_TEMP/valheim"
+          # SteamCMD sometimes exits early while updating itself; retry until the game assembly is there.
+          for attempt in 1 2 3; do
+            ./steamcmd.sh +force_install_dir "$VALHEIM" +login anonymous +app_update "$VALHEIM_SERVER_APP_ID" validate +quit || true
+            [ -f "$VALHEIM/valheim_server_Data/Managed/assembly_valheim.dll" ] && break
+          done
+          test -f "$VALHEIM/valheim_server_Data/Managed/assembly_valheim.dll"
+          echo "VALHEIM_INSTALL=$VALHEIM" >> "$GITHUB_ENV"
+          echo "VALHEIM_MANAGED=$VALHEIM/valheim_server_Data/Managed" >> "$GITHUB_ENV"
+
+      - name: Download BepInExPack
+        run: |
+          mkdir -p "$RUNNER_TEMP/bepinex" && cd "$RUNNER_TEMP/bepinex"
+          curl -fsSL -o pack.zip "https://thunderstore.io/package/download/denikson/BepInExPack_Valheim/$BEPINEX_PACK_VERSION/"
+          unzip -q pack.zip
+          CORE_DLL=$(find "$PWD" -path '*/BepInEx/core/BepInEx.dll' | head -1)
+          test -n "$CORE_DLL"
+          echo "BEPINEX_PATH=$(dirname "$(dirname "$CORE_DLL")")" >> "$GITHUB_ENV"
+
+      - name: Build
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          VERSION_ARG=()
+          [ -n "$VERSION" ] && VERSION_ARG=("-p:Version=$VERSION")
+          dotnet build BenchNetwork/BenchNetwork.csproj -c Release \
+            "-p:VALHEIM_INSTALL=$VALHEIM_INSTALL" \
+            "-p:VALHEIM_MANAGED=$VALHEIM_MANAGED" \
+            "-p:BEPINEX_PATH=$BEPINEX_PATH" \
+            "${VERSION_ARG[@]}"
+          ZIP=$(ls BenchNetwork/bin/Release/BenchNetwork-*.zip)
+          echo "ZIP=$ZIP" >> "$GITHUB_ENV"
+          unzip -l "$ZIP"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BenchNetwork
+          path: ${{ env.ZIP }}
+
+      - name: Publish release
+        if: github.event_name == 'workflow_dispatch' && inputs.version != ''
+        env:
+          VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v$VERSION" "$ZIP" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "BenchNetwork $VERSION" \
+            --generate-notes

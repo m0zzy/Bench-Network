@@ -24,9 +24,9 @@ Requirements: [BepInExPack Valheim](https://thunderstore.io/c/valheim/p/denikson
 
 ### With Gale (or r2modman)
 
-Building (see [Building](#building)) also writes a Thunderstore-format package to
-`BenchNetwork/bin/Release/BenchNetwork-<version>.zip` (`manifest.json`, `icon.png`, `README.md`,
-`BenchNetwork.dll`).
+Download `BenchNetwork-<version>.zip` from the repository's
+[Releases](https://github.com/m0zzy/Bench-Network/releases) page. It is a Thunderstore-format package
+(`manifest.json`, `icon.png`, `README.md`, `BenchNetwork.dll`); don't unzip it.
 
 1. In Gale, open the Valheim profile you play on.
 2. Use Gale's **Import → Local mod** and pick the zip. Gale reads the manifest and installs BepInExPack and
@@ -100,7 +100,20 @@ exposure and fire checks, and crafting recipes.
 Only stations in loaded areas count. If part of a very large network is in an unloaded area, the network can
 split until that area loads.
 
-## Building
+## Releases
+
+GitHub Actions (`.github/workflows/build.yml`) builds the mod on every push. It downloads the free Valheim
+dedicated server for the game assemblies and BepInExPack for BepInEx, so nothing has to be installed locally.
+Each run keeps the zip as an artifact on the run's page.
+
+To publish a release: **Actions → Build → Run workflow**, pick `main`, enter a version such as `0.1.0`, and
+run it. The workflow builds with that version (plugin, `manifest.json` and zip all match) and creates the
+GitHub release `v0.1.0` with the zip attached. The version must be higher than the last one; Jotunn's version
+check compares major.minor, so bump the minor version (`0.2.0`) for changes everyone must update to.
+
+## Building locally
+
+Only needed if you want to build on your own machine instead of using the workflow.
 
 1. Install the .NET SDK (6 or newer), plus BepInEx in your Valheim folder.
 2. Copy `Environment.props.example` to `Environment.props` and set `VALHEIM_INSTALL` (Jotunn also tries the
@@ -112,8 +125,8 @@ On the first build Jotunn's build task writes publicized copies of the game asse
 `Valheim_Data/Managed/publicized_assemblies`. When `BEPINEX_PATH/plugins` exists the DLL is copied to
 `plugins/BenchNetwork/`. Every build also writes the Thunderstore zip next to the DLL.
 
-To release a new version, change `<Version>` in `BenchNetwork/BenchNetwork.csproj` (used for the zip and
-`manifest.json`) and `PluginVersion` in `BenchNetwork/Plugin.cs` (used for Jotunn's version check) together.
+The version comes from `<Version>` in `BenchNetwork/BenchNetwork.csproj` (or `-p:Version=1.2.3`) and is used
+for the plugin, the manifest and the zip name.
 
 ## Test checklist
 

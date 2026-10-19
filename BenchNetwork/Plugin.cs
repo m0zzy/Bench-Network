@@ -17,7 +17,7 @@ namespace BenchNetwork
     {
         public const string PluginGuid = "m0zzy.BenchNetwork";
         public const string PluginName = "BenchNetwork";
-        public const string PluginVersion = "0.1.0";
+        public const string PluginVersion = BuildInfo.Version;
 
         internal static ManualLogSource Log;
 

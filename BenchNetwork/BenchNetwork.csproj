@@ -6,6 +6,7 @@
     <RootNamespace>BenchNetwork</RootNamespace>
     <LangVersion>9.0</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <!-- Default version for local builds; the release workflow overrides it. -->
     <Version>0.1.0</Version>
   </PropertyGroup>
 
@@ -17,6 +18,18 @@
 
   <Target Name="DeployToBepInEx" AfterTargets="Build" Condition="'$(BEPINEX_PATH)' != '' And Exists('$(BEPINEX_PATH)/plugins')">
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BEPINEX_PATH)/plugins/BenchNetwork" />
+  </Target>
+
+  <!-- BuildInfo.Version = $(Version), so the plugin, manifest and zip always carry the same version. -->
+  <Target Name="GenerateBuildInfo" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <BuildInfoFile>$(IntermediateOutputPath)BuildInfo.g.cs</BuildInfoFile>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(BuildInfoFile)" Lines="namespace BenchNetwork { internal static class BuildInfo { public const string Version = &quot;$(Version)&quot;%3B } }" Overwrite="true" WriteOnlyWhenDifferent="true" />
+    <ItemGroup>
+      <Compile Include="$(BuildInfoFile)" />
+      <FileWrites Include="$(BuildInfoFile)" />
+    </ItemGroup>
   </Target>
 
   <!-- Thunderstore-format zip for Gale, r2modman or Thunderstore upload: bin/<Configuration>/BenchNetwork-<Version>.zip -->
