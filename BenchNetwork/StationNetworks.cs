@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using UnityEngine;
 
@@ -12,6 +13,8 @@ namespace BenchNetwork
             public float X;
             public float Z;
             public float RangeSqr;
+            public float Range;
+            public int Level;
         }
 
         public readonly List<CraftingStation> Members = new List<CraftingStation>();
@@ -24,7 +27,7 @@ namespace BenchNetwork
         internal void Add(CraftingStation station, Vector3 position, float range, int level)
         {
             Members.Add(station);
-            _circles.Add(new Circle { X = position.x, Z = position.z, RangeSqr = range * range });
+            _circles.Add(new Circle { X = position.x, Z = position.z, RangeSqr = range * range, Range = range, Level = level });
 
             if (!_bestLevel.TryGetValue(station.m_name, out int best) || level > best)
             {
@@ -55,6 +58,21 @@ namespace BenchNetwork
             }
 
             return false;
+        }
+
+        /// <summary>One line per member, for logs: name token, level, range and map position.</summary>
+        public void AppendDetails(StringBuilder text)
+        {
+            for (int i = 0; i < Members.Count; i++)
+            {
+                Circle circle = _circles[i];
+                string name = Members[i] ? Members[i].m_name : "(destroyed)";
+                text.Append("\n  ").Append(name)
+                    .Append(" level ").Append(circle.Level)
+                    .Append(", range ").Append(circle.Range.ToString("0.#", CultureInfo.InvariantCulture))
+                    .Append(" at (").Append(circle.X.ToString("0", CultureInfo.InvariantCulture))
+                    .Append(", ").Append(circle.Z.ToString("0", CultureInfo.InvariantCulture)).Append(')');
+            }
         }
 
         /// <summary>e.g. "Network: Workbench 5, Forge 7, Stonecutter". Built once per rebuild.</summary>
@@ -214,6 +232,34 @@ namespace BenchNetwork
             return null;
         }
 
+        /// <summary>Every network with its members, for the log and the benchnetwork command. Rebuilds first if needed.</summary>
+        public static string Describe()
+        {
+            EnsureFresh();
+            return DescribeCache();
+        }
+
+        /// <summary>1-based position of the network in <see cref="Describe"/>'s list.</summary>
+        public static int IndexOf(StationNetwork network) => Networks.IndexOf(network) + 1;
+
+        private static string DescribeCache()
+        {
+            if (Networks.Count == 0)
+            {
+                return "No linked stations are loaded.";
+            }
+
+            var text = new StringBuilder();
+            text.Append(Networks.Count).Append(Networks.Count == 1 ? " network:" : " networks:");
+            for (int i = 0; i < Networks.Count; i++)
+            {
+                text.Append("\nNetwork ").Append(i + 1).Append(" (").Append(Networks[i].Members.Count).Append(" stations):");
+                Networks[i].AppendDetails(text);
+            }
+
+            return text.ToString();
+        }
+
         private static void EnsureFresh()
         {
             if (_dirty && ModConfig.Enabled.Value)
@@ -289,6 +335,11 @@ namespace BenchNetwork
 
                 network.Add(Stations[i], Positions[i], RangeList[i], Levels[i]);
                 ByStation[Stations[i]] = network;
+            }
+
+            if (Diagnostics.Verbose)
+            {
+                Diagnostics.DebugOnChange("networks", "Networks changed. " + DescribeCache());
             }
 
             // Drop references to game objects until the next rebuild.

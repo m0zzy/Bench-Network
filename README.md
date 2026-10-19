@@ -101,7 +101,7 @@ To change settings, open the in-game config menu (F1, with
 [ConfigurationManager](https://thunderstore.io/c/valheim/p/Azumatt/Official_BepInEx_ConfigurationManager/)
 installed), or edit `BepInEx/config/m0zzy.BenchNetwork.cfg`.
 
-**On a server, the server's settings win.** Everything except the last four rows below comes from the server
+**On a server, the server's settings win.** Everything except the last five rows below comes from the server
 and is locked for players. Only server admins can change it.
 
 | Setting | Default | What it does |
@@ -116,6 +116,7 @@ and is locked for players. Only server admins can change it.
 | Show network while building | On | Lights up the network's circles while you hold the hammer. |
 | Toggle network circles key | F7 | Key that turns the setting above on or off in game. |
 | Network refresh interval | `2` | How often, in seconds, networks are re-checked while you hold the hammer. Best left alone. |
+| Debug logging | Off | Writes extra detail to the log file. Turn on when reporting a problem. |
 
 There are range settings for the **Workbench, Forge, Stonecutter, Artisan table, Black forge** and
 **Galdr table**. When you change a range, the circle you see around the station grows or shrinks to match.
@@ -139,8 +140,20 @@ grows 4 m per upgrade. The internal name comes from that mod; its author or its 
 
 ## Problems or ideas?
 
-[Open an issue](https://github.com/m0zzy/Bench-Network/issues). For problems, include what you did, what
-happened, and your `BepInEx/LogOutput.log` file (it is inside your Gale profile folder).
+To report a problem, the log file tells us almost everything:
+
+1. **Turn on debug logging.** In the F1 config menu, find BenchNetwork and turn on **Debug logging**. Or set
+   `Debug logging = true` in `BepInEx/config/m0zzy.BenchNetwork.cfg`.
+2. **Make the problem happen again.**
+3. **Optional:** open the console with **F5**, type `benchnetwork` and press Enter while standing where the
+   problem happens. This writes a snapshot of your networks to the log. If F5 does nothing, the game needs the
+   `-console` launch option.
+4. **Quit the game** and find `BepInEx/LogOutput.log` in your Gale profile folder (or your Valheim folder if
+   you installed by hand). The game overwrites this file every time it starts, so copy it before playing again.
+5. [Open an issue](https://github.com/m0zzy/Bench-Network/issues/new/choose), describe what happened, and attach
+   the log.
+
+Ideas are welcome as issues too.
 
 ## For developers
 

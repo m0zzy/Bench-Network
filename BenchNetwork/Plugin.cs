@@ -30,10 +30,16 @@ namespace BenchNetwork
 
             ModConfig.Bind(Config);
             Config.SettingChanged += (_, __) => _configChanged = true;
-            SynchronizationManager.OnConfigurationSynchronized += (_, __) => _configChanged = true;
+            SynchronizationManager.OnConfigurationSynchronized += (_, args) =>
+            {
+                Log.LogInfo(args.InitialSynchronization ? "Received settings from the server." : "Server settings updated.");
+                _configChanged = true;
+            };
 
             _harmony = new Harmony(PluginGuid);
             ApplyPatches();
+            CommandManager.Instance.AddConsoleCommand(new BenchNetworkCommand());
+            Diagnostics.InfoOnChange("settings", ModConfig.Describe());
         }
 
         private void Update()
@@ -43,6 +49,7 @@ namespace BenchNetwork
             {
                 _configChanged = false;
                 ModConfig.Reload();
+                Diagnostics.InfoOnChange("settings", ModConfig.Describe());
                 StationRanges.ApplyToAll();
                 StationNetworks.MarkDirty();
             }
@@ -59,6 +66,8 @@ namespace BenchNetwork
         // Patch class by class so a method renamed in a game update only disables that one feature.
         private void ApplyPatches()
         {
+            int applied = 0;
+            int failed = 0;
             foreach (Type type in AccessTools.GetTypesFromAssembly(Assembly.GetExecutingAssembly()))
             {
                 if (type.GetCustomAttributes(typeof(HarmonyPatch), true).Length == 0)
@@ -69,11 +78,23 @@ namespace BenchNetwork
                 try
                 {
                     _harmony.CreateClassProcessor(type).Patch();
+                    applied++;
                 }
                 catch (Exception e)
                 {
+                    failed++;
                     Log.LogError($"Could not apply {type.Name}; that feature is disabled. {e.GetBaseException().Message}");
                 }
+            }
+
+            string summary = $"BenchNetwork {PluginVersion} loaded: {applied} of {applied + failed} patches applied.";
+            if (failed > 0)
+            {
+                Log.LogWarning(summary + " See the errors above.");
+            }
+            else
+            {
+                Log.LogInfo(summary);
             }
         }
     }

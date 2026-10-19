@@ -45,6 +45,7 @@ namespace BenchNetwork
         public static ConfigEntry<bool> ShowNetworkInHoverText;
         public static ConfigEntry<bool> ShowNetworkWhileBuilding;
         public static ConfigEntry<KeyboardShortcut> ToggleNetworkCirclesKey;
+        public static ConfigEntry<bool> DebugLogging;
 
         // Parsed view of the entries above, rebuilt by Reload().
         private static readonly Dictionary<string, RangeSetting> Ranges = new Dictionary<string, RangeSetting>();
@@ -83,6 +84,8 @@ namespace BenchNetwork
                 "While the hammer is equipped, show the range circle of every station in the network you're standing in.");
             ToggleNetworkCirclesKey = config.Bind(ClientSection, "Toggle network circles key", new KeyboardShortcut(KeyCode.F7),
                 "Key that turns \"Show network while building\" on or off in game.");
+            DebugLogging = config.Bind(ClientSection, "Debug logging", false,
+                "Write network changes and every build or repair the mod allows to BepInEx/LogOutput.log. Turn on when reporting a problem.");
 
             Reload();
         }
@@ -110,6 +113,32 @@ namespace BenchNetwork
                 Add(token, ParseRange(parts, 1, entry), ParseRange(parts, 2, entry));
             }
         }
+
+        /// <summary>Current settings in one block, for the log and the benchnetwork command.</summary>
+        public static string Describe()
+        {
+            var text = new System.Text.StringBuilder("Settings:");
+            text.Append(" enabled=").Append(OnOff(Enabled))
+                .Append(", link building=").Append(OnOff(LinkBuilding))
+                .Append(", link repair=").Append(OnOff(LinkRepair))
+                .Append(", hover text=").Append(OnOff(ShowNetworkInHoverText))
+                .Append(", circles while building=").Append(OnOff(ShowNetworkWhileBuilding))
+                .Append(", refresh=").Append(RefreshInterval.Value.ToString(CultureInfo.InvariantCulture)).Append('s')
+                .Append(", debug logging=").Append(OnOff(DebugLogging));
+
+            text.Append("\nRanges (range + per level; \"game\" = the game's own value):");
+            foreach (KeyValuePair<string, RangeSetting> range in Ranges)
+            {
+                text.Append(' ').Append(range.Key).Append(' ')
+                    .Append(FormatRange(range.Value.BaseRange)).Append('+').Append(FormatRange(range.Value.RangePerLevel)).Append(';');
+            }
+
+            return text.ToString();
+        }
+
+        private static string OnOff(ConfigEntry<bool> entry) => entry.Value ? "on" : "off";
+
+        private static string FormatRange(float value) => value < 0f ? "game" : value.ToString(CultureInfo.InvariantCulture);
 
         /// <summary>True when stations with this name token take part in networks.</summary>
         public static bool IsLinkedType(string token) => token != null && Ranges.ContainsKey(token);

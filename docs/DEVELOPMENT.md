@@ -77,6 +77,21 @@ publicized assembly, so private members are accessed directly.
 Untouched on purpose: the workbench's PlayerBase (spawn blocking) radius, upgrade placement rules, roof,
 exposure and fire checks, and crafting recipes.
 
+## Troubleshooting from logs
+
+Everything goes to `BepInEx/LogOutput.log` at Info level or above, which BepInEx writes to disk by default.
+
+- **Always logged:** `BenchNetwork <version> loaded: N of N patches applied.` (a warning plus an error per
+  failed patch otherwise), the settings at start and whenever they change, and `Received settings from the
+  server.` when Jotunn syncs them.
+- **With `Debug logging` on:** each change in the set of networks (members with name token, level, range and
+  map position), and each build or repair check the mod decided, logged when its outcome changes so per-frame
+  checks don't flood the file.
+- **`benchnetwork` console command:** prints the settings, every network and which one the player is in, to the
+  console and the log.
+
+Player-facing reporting steps are in the README, and `.github/ISSUE_TEMPLATE/bug_report.yml` asks for the log.
+
 ## Releases
 
 GitHub Actions (`.github/workflows/build.yml`) builds the mod on every push. It downloads the free Valheim

@@ -19,6 +19,14 @@ namespace BenchNetwork.Patches
             }
 
             __result = StationNetworks.FindLinkedStation(__0, __1);
+
+            if (Diagnostics.Verbose)
+            {
+                Vector3 at = __result ? __result.transform.position : Vector3.zero;
+                Diagnostics.DebugOnChange("build:" + __0, __result
+                    ? $"Build check for {__0}: allowed through the network by the {__result.m_name} at ({at.x:0}, {at.z:0})."
+                    : $"Build check for {__0}: refused, no {__0} in range or in a network covering this spot.");
+            }
         }
     }
 }
