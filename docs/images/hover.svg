@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="460" height="150" viewBox="0 0 460 150" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Station hover text showing its network</title>
+  <rect x="1" y="1" width="458" height="148" rx="14" fill="#1c2129" stroke="#2e3540" stroke-width="2"/>
+  <rect x="40" y="24" width="380" height="102" rx="8" fill="#000000" fill-opacity="0.45"/>
+  <g font-size="16" text-anchor="middle">
+    <text x="230" y="54" fill="#ffffff" font-weight="600">Workbench</text>
+    <text x="230" y="80" fill="#ffffff">[<tspan fill="#ffd94a" font-weight="700">E</tspan>] Use</text>
+    <text x="230" y="108" fill="#ffffff">Network: Workbench 5, Forge 7, Stonecutter</text>
+  </g>
+</svg>

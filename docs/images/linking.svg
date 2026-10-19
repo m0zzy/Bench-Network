@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="340" viewBox="0 0 800 340" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Overlapping station circles link into one network</title>
+  <rect x="1" y="1" width="798" height="338" rx="14" fill="#1c2129" stroke="#2e3540" stroke-width="2"/>
+  <text x="28" y="42" font-size="19" font-weight="600" fill="#f2e6cf">Overlapping circles link stations into one network</text>
+
+  <!-- network brackets -->
+  <g stroke="#8b94a3" stroke-width="1.5" fill="none">
+    <path d="M65 100 V92 H515 V100"/>
+    <path d="M585 100 V92 H735 V100"/>
+  </g>
+  <text x="290" y="83" font-size="14" font-weight="600" fill="#f2e6cf" text-anchor="middle">One network</text>
+  <text x="660" y="83" font-size="14" font-weight="600" fill="#8b94a3" text-anchor="middle">A separate network</text>
+
+  <!-- circles -->
+  <circle cx="150" cy="195" r="85" fill="#e8a03c" fill-opacity="0.13" stroke="#e8a03c" stroke-width="2.5"/>
+  <circle cx="290" cy="195" r="85" fill="#e2643f" fill-opacity="0.13" stroke="#e2643f" stroke-width="2.5"/>
+  <circle cx="430" cy="195" r="85" fill="#8fb0c9" fill-opacity="0.13" stroke="#8fb0c9" stroke-width="2.5"/>
+  <circle cx="660" cy="195" r="75" fill="#e8a03c" fill-opacity="0.07" stroke="#e8a03c" stroke-opacity="0.6" stroke-width="2.5" stroke-dasharray="7 5"/>
+
+  <!-- links -->
+  <g stroke="#f2e6cf" stroke-width="2" stroke-dasharray="5 4" stroke-opacity="0.75">
+    <line x1="150" y1="195" x2="290" y2="195"/>
+    <line x1="290" y1="195" x2="430" y2="195"/>
+  </g>
+
+  <!-- stations -->
+  <g stroke="#1c2129" stroke-width="3">
+    <circle cx="150" cy="195" r="9" fill="#e8a03c"/>
+    <circle cx="290" cy="195" r="9" fill="#e2643f"/>
+    <circle cx="430" cy="195" r="9" fill="#8fb0c9"/>
+    <circle cx="660" cy="195" r="9" fill="#e8a03c"/>
+  </g>
+  <g font-size="14" fill="#c9ced6" text-anchor="middle">
+    <text x="150" y="224">Workbench</text>
+    <text x="290" y="224">Forge</text>
+    <text x="430" y="224">Stonecutter</text>
+    <text x="660" y="224">Workbench</text>
+  </g>
+
+  <text x="28" y="312" font-size="14" fill="#8b94a3">The workbench and stonecutter don't touch, but both touch the forge, so all three share one network.</text>
+</svg>
