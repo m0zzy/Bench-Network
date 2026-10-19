@@ -108,12 +108,6 @@ jobs:
           dotnet tool install -g ilspycmd --version 8.2.0.7535 >/dev/null
           python3 tools/check_game_members.py "$VALHEIM_MANAGED"/assembly_valheim.dll "$VALHEIM_MANAGED"/assembly_*.dll
 
-      # TEMPORARY research step: member names only, no game code.
-      - name: List shield generator members
-        env:
-          DOTNET_ROLL_FORWARD: Major
-        run: python3 tools/list_members.py ShieldGenerator,ShieldDomeImageEffect "$VALHEIM_MANAGED"/assembly_valheim.dll "$VALHEIM_MANAGED"/assembly_*.dll
-
       - uses: actions/upload-artifact@v4
         with:
           name: BenchNetwork

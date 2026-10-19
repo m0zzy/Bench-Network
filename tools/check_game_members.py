@@ -27,10 +27,15 @@ DIRECT = {
     "Chat": ["instance", "HasFocus"],
     "Terminal": ["AddString"],
     "Localization": ["instance", "Localize"],
+    "ShieldGenerator": ["m_minShieldRadius", "m_maxShieldRadius", "m_maxFuel", "GetHoverText"],
 }
 
 # Private members the mod reads through GameAccess; only checked to exist.
-REFLECTION = {"CraftingStation": ["m_allStations"], "CircleProjector": ["m_segments"]}
+REFLECTION = {
+    "CraftingStation": ["m_allStations"],
+    "CircleProjector": ["m_segments"],
+    "ShieldGenerator": ["m_instances", "GetFuel", "SetFuel"],
+}
 
 
 def decompile(dlls, type_name):

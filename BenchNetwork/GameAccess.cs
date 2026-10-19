@@ -14,6 +14,10 @@ namespace BenchNetwork
         private static readonly FieldInfo AllStationsField = AccessTools.Field(typeof(CraftingStation), "m_allStations");
         private static readonly List<CraftingStation> NoStations = new List<CraftingStation>();
         private static readonly FieldInfo SegmentsField = AccessTools.Field(typeof(CircleProjector), "m_segments");
+        private static readonly FieldInfo ShieldInstancesField = AccessTools.Field(typeof(ShieldGenerator), "m_instances");
+        private static readonly MethodInfo GetFuelMethod = AccessTools.Method(typeof(ShieldGenerator), "GetFuel");
+        private static readonly MethodInfo SetFuelMethod = AccessTools.Method(typeof(ShieldGenerator), "SetFuel", new[] { typeof(float) });
+        private static readonly List<ShieldGenerator> NoShields = new List<ShieldGenerator>();
 
         /// <summary>The game's list of loaded crafting stations (CraftingStation.m_allStations).</summary>
         public static List<CraftingStation> AllStations =>
@@ -22,6 +26,19 @@ namespace BenchNetwork
         /// <summary>The ring pieces a range circle is drawn with (CircleProjector.m_segments), or null.</summary>
         public static List<GameObject> Segments(CircleProjector projector) =>
             projector ? SegmentsField?.GetValue(projector) as List<GameObject> : null;
+
+        /// <summary>The game's list of loaded shield generators (ShieldGenerator.m_instances).</summary>
+        public static List<ShieldGenerator> AllShields =>
+            ShieldInstancesField?.GetValue(null) as List<ShieldGenerator> ?? NoShields;
+
+        /// <summary>True when the shield generator members needed for fuel sharing were found.</summary>
+        public static bool CanShareFuel => GetFuelMethod != null && SetFuelMethod != null;
+
+        /// <summary>The generator's current fuel (ShieldGenerator.GetFuel).</summary>
+        public static float GetFuel(ShieldGenerator shield) => (float)GetFuelMethod.Invoke(shield, null);
+
+        /// <summary>Sets the generator's fuel (ShieldGenerator.SetFuel). Only call on generators this client owns.</summary>
+        public static void SetFuel(ShieldGenerator shield, float fuel) => SetFuelMethod.Invoke(shield, new object[] { fuel });
 
         /// <summary>Logs at startup whether every member could be found, so a game update shows up in the log.</summary>
         public static void CheckMembers()
@@ -34,6 +51,11 @@ namespace BenchNetwork
             if (SegmentsField == null)
             {
                 Plugin.Log.LogWarning("CircleProjector.m_segments not found; network outlines show full circles instead.");
+            }
+
+            if (ShieldInstancesField == null || !CanShareFuel)
+            {
+                Plugin.Log.LogWarning("ShieldGenerator members not found; shield networks are disabled. The game has probably changed.");
             }
         }
     }

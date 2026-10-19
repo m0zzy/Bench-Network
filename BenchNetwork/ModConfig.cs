@@ -27,6 +27,7 @@ namespace BenchNetwork
         private const string GeneralSection = "1 - General";
         private const string RangeSection = "2 - Ranges";
         private const string ClientSection = "3 - Client";
+        private const string ShieldSection = "4 - Shield generators";
 
         private sealed class StationRangeEntries
         {
@@ -56,6 +57,9 @@ namespace BenchNetwork
         public static ConfigEntry<KeyboardShortcut> ToggleNetworkCirclesKey;
         public static ConfigEntry<NetworkCircleStyle> NetworkCircles;
         public static ConfigEntry<bool> DebugLogging;
+        public static ConfigEntry<bool> LinkShields;
+        public static ConfigEntry<float> ShieldRadius;
+        public static ConfigEntry<float> ShieldRadiusLowFuel;
 
         // Parsed view of the entries above, rebuilt by Reload().
         private static readonly Dictionary<string, RangeSetting> Ranges = new Dictionary<string, RangeSetting>();
@@ -99,6 +103,16 @@ namespace BenchNetwork
             DebugLogging = config.Bind(ClientSection, "Debug logging", false,
                 "Write network changes and every build or repair the mod allows to BepInEx/LogOutput.log. Turn on when reporting a problem.");
 
+            LinkShields = config.Bind(ShieldSection, "Link shield generators", true, Synced(
+                "Shield generators whose domes overlap share one fuel pool: fuel added to any of them is spread across " +
+                "the network, damage anywhere drains the whole pool, and when it runs dry every dome drops."));
+            ShieldRadius = config.Bind(ShieldSection, "Shield radius", -1f, Synced(
+                "Dome radius with full fuel. -1 keeps the game's value.",
+                new AcceptableValueRange<float>(-1f, 200f)));
+            ShieldRadiusLowFuel = config.Bind(ShieldSection, "Shield radius when low on fuel", -1f, Synced(
+                "Dome radius as fuel runs out. -1 uses the same value as \"Shield radius\" (or the game's, if that is -1 too).",
+                new AcceptableValueRange<float>(-1f, 200f)));
+
             Reload();
         }
 
@@ -138,6 +152,10 @@ namespace BenchNetwork
                 .Append(" (").Append(NetworkCircles.Value).Append(')')
                 .Append(", refresh=").Append(RefreshInterval.Value.ToString(CultureInfo.InvariantCulture)).Append('s')
                 .Append(", debug logging=").Append(OnOff(DebugLogging));
+
+            text.Append("\nShields: link=").Append(OnOff(LinkShields))
+                .Append(", radius=").Append(FormatRange(ShieldRadius.Value))
+                .Append(", low-fuel radius=").Append(FormatRange(ShieldRadiusLowFuel.Value));
 
             text.Append("\nRanges (range + per level; \"game\" = the game's own value):");
             foreach (KeyValuePair<string, RangeSetting> range in Ranges)

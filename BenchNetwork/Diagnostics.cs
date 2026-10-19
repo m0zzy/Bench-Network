@@ -55,7 +55,7 @@ namespace BenchNetwork
 
         public override void Run(string[] args, Terminal context)
         {
-            string report = $"BenchNetwork {Plugin.PluginVersion}\n{ModConfig.Describe()}\n{StationNetworks.Describe()}";
+            string report = $"BenchNetwork {Plugin.PluginVersion}\n{ModConfig.Describe()}\n{StationNetworks.Describe()}\n{ShieldNetworks.DescribeAll()}";
             Player player = Player.m_localPlayer;
             if (player)
             {

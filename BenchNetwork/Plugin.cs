@@ -56,9 +56,12 @@ namespace BenchNetwork
                     Diagnostics.InfoOnChange("settings", ModConfig.Describe());
                     StationRanges.ApplyToAll();
                     StationNetworks.MarkDirty();
+                    ShieldNetworks.ApplyToAll();
+                    ShieldNetworks.MarkDirty();
                 }
 
                 StationNetworks.Tick();
+                ShieldNetworks.Tick();
                 NetworkHighlight.Update();
             }
             catch (Exception e)

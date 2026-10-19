@@ -51,6 +51,15 @@ Look at a station to see what it's linked to, with the best level of each statio
 Equip the Hammer and the outer edge of the network you're standing in lights up, so you can see exactly where
 you can build. Press **F7** to turn this on or off whenever you like.
 
+### Shield generator networks (experimental)
+
+Shield generators whose domes overlap link up too. The game already blends overlapping domes into one bubble;
+BenchNetwork makes them share **one fuel pool**. Feed bones to any generator in the chain and the fuel spreads
+across all of them. Damage anywhere drains the whole pool, and when it runs dry every dome drops together.
+Look at a generator to see how much fuel the network has left.
+
+Server admins can also change the dome size.
+
 ## What's shared and what isn't
 
 | | Shared across the network? |
@@ -129,6 +138,9 @@ On a server, only the server's admins can change the settings marked *server*.
 | Network circle style | Outline | you | `Outline` or `AllCircles`. |
 | Network refresh interval | `2` | you | How often, in seconds, networks are re-checked while you hold the Hammer. Best left alone. |
 | Debug logging | Off | you | Writes extra detail to the log. Turn on when reporting a problem. |
+| Link shield generators | On | server | Overlapping shield generators share one fuel pool. |
+| Shield radius | `-1` | server | Dome radius with full fuel. `-1` keeps vanilla (30 m). |
+| Shield radius when low on fuel | `-1` | server | Dome radius as fuel runs out. `-1` uses the same as *Shield radius*. |
 
 There are range settings for the **Workbench, Forge, Stonecutter, Artisan table, Black forge** and
 **Galdr table**. Change one and the ring around that station grows or shrinks to match.
