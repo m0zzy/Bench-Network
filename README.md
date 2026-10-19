@@ -48,9 +48,9 @@ The line appears only when the station is linked to at least one other station.
 
 ### See the whole network while building
 
-While you hold the hammer, the circle of every station in the network you're standing in lights up, so you can
-see exactly where you can build. Press **F7** to turn this on or off at any time; the game confirms with a
-message in the top left. You can change the key in the settings.
+While you hold the hammer, the outer edge of the network you're standing in lights up, so you can see exactly
+where you can build. Press **F7** to turn this on or off at any time; the game confirms with a message in the
+top left. You can change the key in the settings, and switch to showing every station's full circle instead.
 
 ## What's shared and what isn't
 
@@ -101,7 +101,7 @@ To change settings, open the in-game config menu (F1, with
 [ConfigurationManager](https://thunderstore.io/c/valheim/p/Azumatt/Official_BepInEx_ConfigurationManager/)
 installed), or edit `BepInEx/config/m0zzy.BenchNetwork.cfg`.
 
-**On a server, the server's settings win.** Everything except the last five rows below comes from the server
+**On a server, the server's settings win.** Everything except the last six rows below comes from the server
 and is locked for players. Only server admins can change it.
 
 | Setting | Default | What it does |
@@ -115,6 +115,7 @@ and is locked for players. Only server admins can change it.
 | Show network in hover text | On | Shows the network line when you look at a station. |
 | Show network while building | On | Lights up the network's circles while you hold the hammer. |
 | Toggle network circles key | F7 | Key that turns the setting above on or off in game. |
+| Network circle style | Outline | `Outline` shows only the network's outer edge; `AllCircles` shows every station's full circle. |
 | Network refresh interval | `2` | How often, in seconds, networks are re-checked while you hold the hammer. Best left alone. |
 | Debug logging | Off | Writes extra detail to the log file. Turn on when reporting a problem. |
 

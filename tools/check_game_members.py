@@ -30,7 +30,7 @@ DIRECT = {
 }
 
 # Private members the mod reads through GameAccess; only checked to exist.
-REFLECTION = {"CraftingStation": ["m_allStations"]}
+REFLECTION = {"CraftingStation": ["m_allStations"], "CircleProjector": ["m_segments"]}
 
 
 def decompile(dlls, type_name):

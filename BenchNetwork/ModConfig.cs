@@ -13,6 +13,15 @@ namespace BenchNetwork
         public float RangePerLevel;
     }
 
+    internal enum NetworkCircleStyle
+    {
+        /// <summary>Only the network's outer edge.</summary>
+        Outline,
+
+        /// <summary>Every station's full circle.</summary>
+        AllCircles,
+    }
+
     internal static class ModConfig
     {
         private const string GeneralSection = "1 - General";
@@ -45,6 +54,7 @@ namespace BenchNetwork
         public static ConfigEntry<bool> ShowNetworkInHoverText;
         public static ConfigEntry<bool> ShowNetworkWhileBuilding;
         public static ConfigEntry<KeyboardShortcut> ToggleNetworkCirclesKey;
+        public static ConfigEntry<NetworkCircleStyle> NetworkCircles;
         public static ConfigEntry<bool> DebugLogging;
 
         // Parsed view of the entries above, rebuilt by Reload().
@@ -84,6 +94,8 @@ namespace BenchNetwork
                 "While the hammer is equipped, show the range circle of every station in the network you're standing in.");
             ToggleNetworkCirclesKey = config.Bind(ClientSection, "Toggle network circles key", new KeyboardShortcut(KeyCode.F7),
                 "Key that turns \"Show network while building\" on or off in game.");
+            NetworkCircles = config.Bind(ClientSection, "Network circle style", NetworkCircleStyle.Outline,
+                "Outline: only the network's outer edge. AllCircles: every station's full circle.");
             DebugLogging = config.Bind(ClientSection, "Debug logging", false,
                 "Write network changes and every build or repair the mod allows to BepInEx/LogOutput.log. Turn on when reporting a problem.");
 
@@ -123,6 +135,7 @@ namespace BenchNetwork
                 .Append(", link repair=").Append(OnOff(LinkRepair))
                 .Append(", hover text=").Append(OnOff(ShowNetworkInHoverText))
                 .Append(", circles while building=").Append(OnOff(ShowNetworkWhileBuilding))
+                .Append(" (").Append(NetworkCircles.Value).Append(')')
                 .Append(", refresh=").Append(RefreshInterval.Value.ToString(CultureInfo.InvariantCulture)).Append('s')
                 .Append(", debug logging=").Append(OnOff(DebugLogging));
 

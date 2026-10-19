@@ -67,6 +67,19 @@ namespace BenchNetwork
             }
         }
 
+        // After every Update, so the game has already placed this frame's circle segments.
+        private void LateUpdate()
+        {
+            try
+            {
+                NetworkHighlight.LateUpdate();
+            }
+            catch (Exception e)
+            {
+                Diagnostics.ErrorOnce(e);
+            }
+        }
+
         private void OnDestroy()
         {
             _harmony?.UnpatchSelf();
