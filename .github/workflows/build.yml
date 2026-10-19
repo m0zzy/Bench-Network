@@ -2,6 +2,7 @@ name: Build
 
 # Every push builds the mod and keeps the zip as a downloadable artifact.
 # To publish a release: Actions -> Build -> Run workflow, and enter a version.
+# The release goes to Hexium first (when set up, see docs/DEVELOPMENT.md), then to GitHub Releases.
 on:
   push:
     branches: ['**']
@@ -11,9 +12,13 @@ on:
         description: 'Release version, e.g. 0.1.0. Leave empty to build without releasing.'
         required: false
         default: ''
+      hexium:
+        description: 'Also publish the release to Hexium'
+        type: boolean
+        default: true
 
 permissions:
-  contents: write
+  contents: read
 
 env:
   # Free Valheim dedicated server; it ships the same game assemblies the mod compiles against.
@@ -89,13 +94,71 @@ jobs:
           name: BenchNetwork
           path: ${{ env.ZIP }}
 
-      - name: Publish release
-        if: github.event_name == 'workflow_dispatch' && inputs.version != ''
+  # Runs on its own, with read-only access, so the third-party upload action only sees the Hexium token.
+  # Skipped until the HEXIUM_TEAM repository variable is set (see docs/DEVELOPMENT.md).
+  hexium:
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && inputs.version != '' && inputs.hexium && vars.HEXIUM_TEAM != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Hexium token
+        env:
+          HAS_TOKEN: ${{ secrets.HEXIUM_AUTH_TOKEN != '' }}
+        run: |
+          if [ "$HAS_TOKEN" != "true" ]; then
+            echo "::error::HEXIUM_TEAM is set but the HEXIUM_AUTH_TOKEN secret is missing (see docs/DEVELOPMENT.md)."
+            exit 1
+          fi
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: BenchNetwork
+          path: package
+
+      - name: Find package
+        run: echo "ZIP=$(ls package/BenchNetwork-*.zip)" >> "$GITHUB_ENV"
+
+      - name: Publish to Hexium
+        id: publish
+        uses: Klastic/publish-to-hexium@v1
+        with:
+          token: ${{ secrets.HEXIUM_AUTH_TOKEN }}
+          package: ${{ env.ZIP }}
+          author-name: ${{ vars.HEXIUM_TEAM }}
+          community-categories: '{"valheim": ["Mods", "Client & Server"]}'
+
+      - name: Report Hexium result
+        env:
+          HIDDEN: ${{ steps.publish.outputs.hidden }}
+        run: |
+          if [ "$HIDDEN" = "true" ]; then
+            echo "::warning::Hexium accepted the upload but the package is hidden for now (for example while it is reviewed)."
+          else
+            echo "Published to Hexium."
+          fi
+
+  release:
+    needs: [build, hexium]
+    # Still release on GitHub when the Hexium job was skipped, but not when it failed.
+    if: >-
+      always() && github.event_name == 'workflow_dispatch' && inputs.version != '' &&
+      needs.build.result == 'success' &&
+      (needs.hexium.result == 'success' || needs.hexium.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: BenchNetwork
+          path: package
+
+      - name: Publish GitHub release
         env:
           VERSION: ${{ inputs.version }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "v$VERSION" "$ZIP" \
+          gh release create "v$VERSION" package/BenchNetwork-*.zip \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
             --title "BenchNetwork $VERSION" \

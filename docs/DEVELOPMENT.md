@@ -86,6 +86,35 @@ run it. The workflow builds with that version (plugin, `manifest.json` and zip a
 GitHub release `v0.1.0` with the zip attached. The version must be higher than the last one; Jotunn's version
 check compares major.minor, so bump the minor version (`0.2.0`) for changes everyone must update to.
 
+A release runs three jobs: **build**, then **hexium** (upload to Hexium), then **release** (GitHub release).
+The GitHub release is only created when the Hexium upload succeeded or was skipped, so a rejected upload can
+be fixed and re-run with the same version.
+
+### Publishing to Hexium
+
+The **hexium** job uploads the same zip with the third-party action
+[Klastic/publish-to-hexium](https://github.com/Klastic/publish-to-hexium), which uses Hexium's API at
+`hexium.gg/api/experimental`. It runs in its own job with read-only repository access, so the action only
+ever sees the Hexium token. Until it's set up, the job is skipped and releases go to GitHub only.
+
+One-time setup:
+
+1. On [hexium.gg](https://hexium.gg), sign in, create a team (this becomes the author name on the mod's page),
+   and create an API token in the team settings.
+2. In this repository on GitHub: **Settings → Secrets and variables → Actions**.
+   - On the **Secrets** tab, add `HEXIUM_AUTH_TOKEN` with the token.
+   - On the **Variables** tab, add `HEXIUM_TEAM` with the team name exactly as Hexium shows it.
+
+From then on, every release made with **Run workflow** goes to Hexium as well. Untick **Also publish the
+release to Hexium** to skip it for one release. Notes:
+
+- Each version can be uploaded to Hexium only once.
+- The upload is listed under Valheim in the categories `Mods` and `Client & Server`; change them in the
+  `community-categories` line of the workflow. A category name Hexium doesn't know makes the upload fail.
+- If Hexium accepts the upload but keeps it hidden (for example while it's reviewed), the run shows a warning.
+- Hexium shows the package's `README.md` as the mod page. Its images and links point at this GitHub repository,
+  so they only work for other people if the repository is public.
+
 ## Building locally
 
 Only needed if you want to build on your own machine instead of using the workflow.
