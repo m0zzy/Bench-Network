@@ -96,7 +96,7 @@ jobs:
           DOTNET_ROLL_FORWARD: Major
         run: |
           dotnet tool install -g ilspycmd --version 8.2.0.7535 >/dev/null
-          python3 tools/check_game_members.py "$VALHEIM_MANAGED/assembly_valheim.dll"
+          python3 tools/check_game_members.py "$VALHEIM_MANAGED"/assembly_valheim.dll "$VALHEIM_MANAGED"/assembly_*.dll
 
       - uses: actions/upload-artifact@v4
         with:

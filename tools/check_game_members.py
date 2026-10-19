@@ -4,7 +4,8 @@ The mod compiles against a publicized copy of the game where everything is publi
 compiles fine but can throw FieldAccessException / MethodAccessException in game. Private members must be
 read through GameAccess (reflection) instead, and listed under REFLECTION below.
 
-Usage: python3 tools/check_game_members.py <path to assembly_valheim.dll>   (needs ilspycmd on PATH)
+Usage: python3 tools/check_game_members.py <game dll> [<game dll> ...]   (needs ilspycmd on PATH)
+Pass assembly_valheim.dll and the game's other assembly_*.dll files; each type is looked up in all of them.
 """
 import re
 import subprocess
@@ -32,9 +33,12 @@ DIRECT = {
 REFLECTION = {"CraftingStation": ["m_allStations"]}
 
 
-def decompile(dll, type_name):
-    result = subprocess.run(["ilspycmd", "-t", type_name, dll], capture_output=True, text=True)
-    return result.stdout
+def decompile(dlls, type_name):
+    for dll in dlls:
+        result = subprocess.run(["ilspycmd", "-t", type_name, dll], capture_output=True, text=True)
+        if result.returncode == 0 and re.search(r"\b(class|struct)\s+" + re.escape(type_name) + r"\b", result.stdout):
+            return result.stdout
+    return ""
 
 
 def declarations(source, member):
@@ -43,9 +47,9 @@ def declarations(source, member):
 
 
 def main():
-    dll = sys.argv[1]
+    dlls = sys.argv[1:]
     cache = {}
-    source = lambda t: cache.setdefault(t, decompile(dll, t))
+    source = lambda t: cache[t] if t in cache else cache.setdefault(t, decompile(dlls, t))
     problems = []
 
     for type_name, members in DIRECT.items():
