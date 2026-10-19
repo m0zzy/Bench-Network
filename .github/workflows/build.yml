@@ -3,6 +3,7 @@ name: Build
 # Every push builds the mod and keeps the zip as a downloadable artifact.
 # To publish a release: Actions -> Build -> Run workflow, and enter a version.
 # The release goes to Hexium first (when set up, see docs/DEVELOPMENT.md), then to GitHub Releases.
+# Tick "Experimental" to publish a GitHub pre-release from any branch instead; it never goes to Hexium.
 on:
   push:
     branches: ['**']
@@ -16,6 +17,10 @@ on:
         description: 'Also publish the release to Hexium'
         type: boolean
         default: true
+      experimental:
+        description: 'Experimental: GitHub pre-release only, from any branch, never to Hexium'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -39,8 +44,13 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.version != ''
         env:
           VERSION: ${{ inputs.version }}
+          EXPERIMENTAL: ${{ inputs.experimental }}
           GH_TOKEN: ${{ github.token }}
         run: |
+          if [ "$EXPERIMENTAL" != "true" ] && [ "$GITHUB_REF_NAME" != "${{ github.event.repository.default_branch }}" ]; then
+            echo "::error::Stable releases come from the default branch only (this is '$GITHUB_REF_NAME'). Tick 'Experimental' to release this branch as a pre-release."
+            exit 1
+          fi
           if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "::error::Version must look like 1.2.3 (got '$VERSION')."
             exit 1
@@ -107,7 +117,7 @@ jobs:
   # Skipped until the HEXIUM_TEAM repository variable is set (see docs/DEVELOPMENT.md).
   hexium:
     needs: build
-    if: github.event_name == 'workflow_dispatch' && inputs.version != '' && inputs.hexium && vars.HEXIUM_TEAM != ''
+    if: github.event_name == 'workflow_dispatch' && inputs.version != '' && inputs.hexium && !inputs.experimental && vars.HEXIUM_TEAM != ''
     runs-on: ubuntu-latest
     steps:
       - name: Check Hexium token
@@ -165,10 +175,20 @@ jobs:
       - name: Publish GitHub release
         env:
           VERSION: ${{ inputs.version }}
+          EXPERIMENTAL: ${{ inputs.experimental }}
           GH_TOKEN: ${{ github.token }}
         run: |
+          EXTRA=()
+          TITLE="BenchNetwork $VERSION"
+          if [ "$EXPERIMENTAL" = "true" ]; then
+            # Pre-releases don't count as "latest", so players and the README's download link keep the stable one.
+            EXTRA=(--prerelease --notes "Experimental build from \`$GITHUB_REF_NAME\` for testing. Not for general use.")
+            TITLE="BenchNetwork $VERSION (experimental)"
+          else
+            EXTRA=(--generate-notes)
+          fi
           gh release create "v$VERSION" package/BenchNetwork-*.zip \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
-            --title "BenchNetwork $VERSION" \
-            --generate-notes
+            --title "$TITLE" \
+            "${EXTRA[@]}"

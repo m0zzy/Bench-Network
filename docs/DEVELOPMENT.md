@@ -112,6 +112,19 @@ A release runs three jobs: **build**, then **hexium** (upload to Hexium), then *
 The GitHub release is only created when the Hexium upload succeeded or was skipped, so a rejected upload can
 be fixed and re-run with the same version.
 
+### Experimental builds
+
+To try changes before they go to players, build them from a branch other than `main` as a **pre-release**:
+**Actions → Build → Run workflow**, pick the branch, enter a version, tick **Experimental**, and run it.
+
+- It creates a GitHub **pre-release** with the zip attached and skips Hexium. GitHub's "latest release" (and the
+  README's download link) ignores pre-releases, so players keep getting the stable version.
+- The version has to be plain numbers, because BepInEx rejects suffixes like `-beta`. Use the next version you
+  haven't released, e.g. `0.3.0`, and give the stable release a higher one later if the experiment changes.
+- Jotunn's version check compares major.minor, so everyone testing together, including the server, needs the
+  same experimental build.
+- Stable releases (Experimental unticked) are refused from any branch other than `main`.
+
 ### Publishing to Hexium
 
 The **hexium** job uploads the same zip with the third-party action
