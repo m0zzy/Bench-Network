@@ -59,8 +59,13 @@ and an error is logged, and the rest of the mod keeps working.
 
 ### Game members used
 
-Confirm these in `assembly_valheim.dll` (dnSpy or ILSpy) after a game update. The mod compiles against the
-publicized assembly, so private members are accessed directly.
+The mod compiles against the publicized assembly, where every member is public. At runtime the real game's
+access rules apply, so **private members must not be used directly**: read them through `GameAccess`
+(reflection), as with `CraftingStation.m_allStations`. The project also sets `AllowUnsafeBlocks`, which marks
+the DLL with `SkipVerification` so Mono skips access checks, as a second line of defence.
+
+`tools/check_game_members.py` runs in CI against the real `assembly_valheim.dll` and fails the build if a
+member the mod uses directly isn't public. Add new members to its lists when you use them.
 
 - `CraftingStation`: `m_name`, `m_rangeBuild`, `m_extraRangePerLevel`, `m_areaMarker`, `m_allStations`
   (static), `Start()`, `OnDestroy()`, `GetLevel()`, `GetHoverText()`, `HaveBuildStationInRange(string, Vector3)`
@@ -76,6 +81,21 @@ publicized assembly, so private members are accessed directly.
 
 Untouched on purpose: the workbench's PlayerBase (spawn blocking) radius, upgrade placement rules, roof,
 exposure and fire checks, and crafting recipes.
+
+## Troubleshooting from logs
+
+Everything goes to `BepInEx/LogOutput.log` at Info level or above, which BepInEx writes to disk by default.
+
+- **Always logged:** `BenchNetwork <version> loaded: N of N patches applied.` (a warning plus an error per
+  failed patch otherwise), the settings at start and whenever they change, and `Received settings from the
+  server.` when Jotunn syncs them.
+- **With `Debug logging` on:** each change in the set of networks (members with name token, level, range and
+  map position), and each build or repair check the mod decided, logged when its outcome changes so per-frame
+  checks don't flood the file.
+- **`benchnetwork` console command:** prints the settings, every network and which one the player is in, to the
+  console and the log.
+
+Player-facing reporting steps are in the README, and `.github/ISSUE_TEMPLATE/bug_report.yml` asks for the log.
 
 ## Releases
 

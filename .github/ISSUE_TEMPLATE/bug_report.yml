@@ -1,0 +1,47 @@
+name: Bug report
+description: Something in BenchNetwork doesn't work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! The log file is the most useful part. Before you start:
+        1. Turn on **Debug logging** in the BenchNetwork settings (F1 menu, or `BepInEx/config/m0zzy.BenchNetwork.cfg`).
+        2. Make the problem happen again. If you can, open the console (F5) and type `benchnetwork` while standing where it happens.
+        3. Quit the game, then attach `BepInEx/LogOutput.log` below. The game overwrites it on every launch, so grab it before starting again.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: BenchNetwork version
+      placeholder: e.g. 0.2.0
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where were you playing?
+      options:
+        - Single player
+        - Hosting from my game
+        - Dedicated server
+    validations:
+      required: true
+  - type: textarea
+    id: mods
+    attributes:
+      label: Other mods
+      description: A list of your other mods, or your Gale/r2modman profile code.
+  - type: textarea
+    id: log
+    attributes:
+      label: Log file
+      description: Drag `BepInEx/LogOutput.log` into this box. On a dedicated server, attach the server's log too if you can.
+    validations:
+      required: true

@@ -89,6 +89,15 @@ jobs:
           echo "ZIP=$ZIP" >> "$GITHUB_ENV"
           unzip -l "$ZIP"
 
+      # The mod compiles against a publicized game where everything is public; this catches members that are
+      # private in the real game and would throw FieldAccessException in game.
+      - name: Check game members are accessible
+        env:
+          DOTNET_ROLL_FORWARD: Major
+        run: |
+          dotnet tool install -g ilspycmd --version 8.2.0.7535 >/dev/null
+          python3 tools/check_game_members.py "$VALHEIM_MANAGED"/assembly_valheim.dll "$VALHEIM_MANAGED"/assembly_*.dll
+
       - uses: actions/upload-artifact@v4
         with:
           name: BenchNetwork

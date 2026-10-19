@@ -8,18 +8,26 @@ namespace BenchNetwork.Patches
     {
         private static void Postfix(CraftingStation __instance, ref string __result)
         {
-            if (!ModConfig.Enabled.Value || !ModConfig.ShowNetworkInHoverText.Value)
+            // Never let a mod error break the game's own check; keep the game's answer instead.
+            try
             {
-                return;
-            }
+                if (!ModConfig.Enabled.Value || !ModConfig.ShowNetworkInHoverText.Value)
+                {
+                    return;
+                }
 
-            StationNetwork network = StationNetworks.CachedNetworkOf(__instance);
-            if (network == null || network.Members.Count < 2)
+                StationNetwork network = StationNetworks.CachedNetworkOf(__instance);
+                if (network == null || network.Members.Count < 2)
+                {
+                    return;
+                }
+
+                __result += "\n" + network.Description;
+            }
+            catch (System.Exception e)
             {
-                return;
+                Diagnostics.ErrorOnce(e);
             }
-
-            __result += "\n" + network.Description;
         }
     }
 }

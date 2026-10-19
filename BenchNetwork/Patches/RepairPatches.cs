@@ -13,30 +13,48 @@ namespace BenchNetwork.Patches
         // __0 is the item; positional so the patch doesn't depend on the game's parameter name.
         private static void Postfix(ItemDrop.ItemData __0, ref bool __result)
         {
-            ItemDrop.ItemData item = __0;
-            if (__result || !ModConfig.Enabled.Value || !ModConfig.LinkRepair.Value)
+            // Never let a mod error break the game's own check; keep the game's answer instead.
+            try
             {
-                return;
-            }
+                ItemDrop.ItemData item = __0;
+                if (__result || !ModConfig.Enabled.Value || !ModConfig.LinkRepair.Value)
+                {
+                    return;
+                }
 
-            if (item?.m_shared == null || !item.m_shared.m_canBeReparied)
+                if (item?.m_shared == null || !item.m_shared.m_canBeReparied)
+                {
+                    return;
+                }
+
+                Player player = Player.m_localPlayer;
+                CraftingStation current = player ? player.GetCurrentCraftingStation() : null;
+                StationNetwork network = current ? StationNetworks.NetworkOf(current) : null;
+                Recipe recipe = network != null && ObjectDB.instance ? ObjectDB.instance.GetRecipe(item) : null;
+                if (!recipe)
+                {
+                    return;
+                }
+
+                int requiredLevel = Mathf.Max(1, recipe.m_minStationLevel);
+                __result = HasStation(network, recipe.m_repairStation, requiredLevel)
+                    || HasStation(network, recipe.m_craftingStation, requiredLevel);
+
+                if (Diagnostics.Verbose)
+                {
+                    Diagnostics.DebugOnChange("repair:" + item.m_shared.m_name,
+                        $"Repair check for {item.m_shared.m_name} at the {current.m_name}: {(__result ? "allowed" : "refused")} " +
+                        $"(needs level {requiredLevel} of {Describe(network, recipe.m_repairStation)} or {Describe(network, recipe.m_craftingStation)}).");
+                }
+            }
+            catch (System.Exception e)
             {
-                return;
+                Diagnostics.ErrorOnce(e);
             }
-
-            Player player = Player.m_localPlayer;
-            CraftingStation current = player ? player.GetCurrentCraftingStation() : null;
-            StationNetwork network = current ? StationNetworks.NetworkOf(current) : null;
-            Recipe recipe = network != null && ObjectDB.instance ? ObjectDB.instance.GetRecipe(item) : null;
-            if (!recipe)
-            {
-                return;
-            }
-
-            int requiredLevel = Mathf.Max(1, recipe.m_minStationLevel);
-            __result = HasStation(network, recipe.m_repairStation, requiredLevel)
-                || HasStation(network, recipe.m_craftingStation, requiredLevel);
         }
+
+        private static string Describe(StationNetwork network, CraftingStation required) =>
+            required ? $"{required.m_name} (network has level {network.LevelOf(required.m_name)})" : "none";
 
         private static bool HasStation(StationNetwork network, CraftingStation required, int level) =>
             required && network.LevelOf(required.m_name) >= level;

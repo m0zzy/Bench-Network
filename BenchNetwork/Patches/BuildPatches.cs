@@ -13,12 +13,28 @@ namespace BenchNetwork.Patches
         // Positional arguments (name, point) so the patch doesn't depend on the game's parameter names.
         private static void Postfix(string __0, Vector3 __1, ref CraftingStation __result)
         {
-            if (__result || !ModConfig.Enabled.Value || !ModConfig.LinkBuilding.Value)
+            // Never let a mod error break the game's own check; keep the game's answer instead.
+            try
             {
-                return;
-            }
+                if (__result || !ModConfig.Enabled.Value || !ModConfig.LinkBuilding.Value)
+                {
+                    return;
+                }
 
-            __result = StationNetworks.FindLinkedStation(__0, __1);
+                __result = StationNetworks.FindLinkedStation(__0, __1);
+
+                if (Diagnostics.Verbose)
+                {
+                    Vector3 at = __result ? __result.transform.position : Vector3.zero;
+                    Diagnostics.DebugOnChange("build:" + __0, __result
+                        ? $"Build check for {__0}: allowed through the network by the {__result.m_name} at ({at.x:0}, {at.z:0})."
+                        : $"Build check for {__0}: refused, no {__0} in range or in a network covering this spot.");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Diagnostics.ErrorOnce(e);
+            }
         }
     }
 }
