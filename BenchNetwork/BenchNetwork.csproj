@@ -19,4 +19,28 @@
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BEPINEX_PATH)/plugins/BenchNetwork" />
   </Target>
 
+  <!-- Thunderstore-format zip for Gale, r2modman or Thunderstore upload: bin/<Configuration>/BenchNetwork-<Version>.zip -->
+  <PropertyGroup>
+    <ThunderstoreManifest>{
+  "name": "BenchNetwork",
+  "version_number": "$(Version)",
+  "website_url": "https://github.com/m0zzy/Bench-Network",
+  "description": "Crafting stations whose range circles overlap join a network. Build, remove and repair anywhere in it as if every station type were there.",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2202",
+    "ValheimModding-Jotunn-2.30.2"
+  ]
+}</ThunderstoreManifest>
+  </PropertyGroup>
+
+  <Target Name="ThunderstorePackage" AfterTargets="Build">
+    <PropertyGroup>
+      <ThunderstoreStaging>$(IntermediateOutputPath)thunderstore/</ThunderstoreStaging>
+    </PropertyGroup>
+    <RemoveDir Directories="$(ThunderstoreStaging)" />
+    <Copy SourceFiles="$(TargetPath);Package/icon.png;../README.md" DestinationFolder="$(ThunderstoreStaging)" />
+    <WriteLinesToFile File="$(ThunderstoreStaging)manifest.json" Lines="$(ThunderstoreManifest)" Overwrite="true" />
+    <ZipDirectory SourceDirectory="$(ThunderstoreStaging)" DestinationFile="$(OutDir)$(AssemblyName)-$(Version).zip" Overwrite="true" />
+  </Target>
+
 </Project>

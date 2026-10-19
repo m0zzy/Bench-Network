@@ -22,6 +22,20 @@ install can't work, and Jotunn refuses to connect a client whose version differs
 Requirements: [BepInExPack Valheim](https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/) and
 [Jotunn](https://thunderstore.io/c/valheim/p/ValheimModding/Jotunn/) 2.30.2 or newer.
 
+### With Gale (or r2modman)
+
+Building (see [Building](#building)) also writes a Thunderstore-format package to
+`BenchNetwork/bin/Release/BenchNetwork-<version>.zip` (`manifest.json`, `icon.png`, `README.md`,
+`BenchNetwork.dll`).
+
+1. In Gale, open the Valheim profile you play on.
+2. Use Gale's **Import → Local mod** and pick the zip. Gale reads the manifest and installs BepInExPack and
+   Jotunn as dependencies if the profile doesn't have them.
+3. Every player and the server need the same build. To give it to the other players, send them the zip to
+   import the same way, or export the profile from Gale and share the code or file.
+
+### Manually
+
 Copy `BenchNetwork.dll` into `BepInEx/plugins/BenchNetwork/`.
 
 ## Configuration
@@ -96,7 +110,10 @@ split until that area loads.
 
 On the first build Jotunn's build task writes publicized copies of the game assemblies to
 `Valheim_Data/Managed/publicized_assemblies`. When `BEPINEX_PATH/plugins` exists the DLL is copied to
-`plugins/BenchNetwork/`.
+`plugins/BenchNetwork/`. Every build also writes the Thunderstore zip next to the DLL.
+
+To release a new version, change `<Version>` in `BenchNetwork/BenchNetwork.csproj` (used for the zip and
+`manifest.json`) and `PluginVersion` in `BenchNetwork/Plugin.cs` (used for Jotunn's version check) together.
 
 ## Test checklist
 
