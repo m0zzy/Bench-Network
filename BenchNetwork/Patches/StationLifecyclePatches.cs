@@ -10,8 +10,15 @@ namespace BenchNetwork.Patches
         // Also runs for placement ghosts, so the circle shown while placing matches the configured range.
         private static void Postfix(CraftingStation __instance)
         {
-            StationRanges.Apply(__instance);
-            StationNetworks.MarkDirty();
+            try
+            {
+                StationRanges.Apply(__instance);
+                StationNetworks.MarkDirty();
+            }
+            catch (System.Exception e)
+            {
+                Diagnostics.ErrorOnce(e);
+            }
         }
     }
 
@@ -20,20 +27,27 @@ namespace BenchNetwork.Patches
     {
         private static void Postfix(CraftingStation __instance)
         {
-            StationRanges.Forget(__instance);
-            StationNetworks.MarkDirty();
+            try
+            {
+                StationRanges.Forget(__instance);
+                StationNetworks.MarkDirty();
+            }
+            catch (System.Exception e)
+            {
+                Diagnostics.ErrorOnce(e);
+            }
         }
     }
 
     [HarmonyPatch(typeof(StationExtension), nameof(StationExtension.Awake))]
     internal static class StationExtensionAwakePatch
     {
-        private static void Postfix() => StationNetworks.MarkLevelsChanged();
+        private static void Postfix() => StationNetworks.MarkLevelsChanged(); // only sets flags; cannot throw
     }
 
     [HarmonyPatch(typeof(StationExtension), nameof(StationExtension.OnDestroy))]
     internal static class StationExtensionOnDestroyPatch
     {
-        private static void Postfix() => StationNetworks.MarkLevelsChanged();
+        private static void Postfix() => StationNetworks.MarkLevelsChanged(); // only sets flags; cannot throw
     }
 }

@@ -44,18 +44,26 @@ namespace BenchNetwork
 
         private void Update()
         {
-            // A server sync changes many entries at once; handle them together.
-            if (_configChanged)
+            // Runs every frame: log a failure once instead of on every frame.
+            try
             {
-                _configChanged = false;
-                ModConfig.Reload();
-                Diagnostics.InfoOnChange("settings", ModConfig.Describe());
-                StationRanges.ApplyToAll();
-                StationNetworks.MarkDirty();
-            }
+                // A server sync changes many entries at once; handle them together.
+                if (_configChanged)
+                {
+                    _configChanged = false;
+                    ModConfig.Reload();
+                    Diagnostics.InfoOnChange("settings", ModConfig.Describe());
+                    StationRanges.ApplyToAll();
+                    StationNetworks.MarkDirty();
+                }
 
-            StationNetworks.Tick();
-            NetworkHighlight.Update();
+                StationNetworks.Tick();
+                NetworkHighlight.Update();
+            }
+            catch (Exception e)
+            {
+                Diagnostics.ErrorOnce(e);
+            }
         }
 
         private void OnDestroy()

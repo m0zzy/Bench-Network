@@ -6,6 +6,10 @@
     <RootNamespace>BenchNetwork</RootNamespace>
     <LangVersion>9.0</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <!-- Required for the publicized game assemblies: it makes the compiler mark the DLL with SkipVerification,
+         which tells Unity's Mono to skip access checks. Without it, reading a private game field such as
+         CraftingStation.m_allStations throws FieldAccessException at runtime. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <!-- Default version for local builds; the release workflow overrides it. -->
     <Version>0.1.0</Version>
   </PropertyGroup>

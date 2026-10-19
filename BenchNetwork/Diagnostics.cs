@@ -23,6 +23,19 @@ namespace BenchNetwork
             Plugin.Log.LogInfo(message);
         }
 
+        /// <summary>Logs an exception the first time it occurs, so an error in per-frame code doesn't flood the log.</summary>
+        public static void ErrorOnce(System.Exception exception)
+        {
+            string message = exception.ToString();
+            if (LastByKey.TryGetValue("error:" + message, out _))
+            {
+                return;
+            }
+
+            LastByKey["error:" + message] = message;
+            Plugin.Log.LogError("Unexpected error (logged once; it may keep happening): " + message);
+        }
+
         /// <summary>Like <see cref="InfoOnChange"/>, but only with "Debug logging" turned on.</summary>
         public static void DebugOnChange(string key, string message)
         {
