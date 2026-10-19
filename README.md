@@ -68,8 +68,6 @@ you can build. Press **F7** to turn this on or off whenever you like.
 **With Gale:** search for **BenchNetwork**, click **Install**, and start Valheim from Gale. Gale installs
 BepInEx and Jotunn for you.
 
-r2modman works the same way.
-
 <details>
 <summary>Installing from a zip, or by hand</summary>
 
