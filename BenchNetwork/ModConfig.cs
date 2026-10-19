@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using BepInEx.Configuration;
+using UnityEngine;
 
 namespace BenchNetwork
 {
@@ -42,6 +43,8 @@ namespace BenchNetwork
         public static ConfigEntry<string> ExtraStations;
         public static ConfigEntry<float> RefreshInterval;
         public static ConfigEntry<bool> ShowNetworkInHoverText;
+        public static ConfigEntry<bool> ShowNetworkWhileBuilding;
+        public static ConfigEntry<KeyboardShortcut> ToggleNetworkCirclesKey;
 
         // Parsed view of the entries above, rebuilt by Reload().
         private static readonly Dictionary<string, RangeSetting> Ranges = new Dictionary<string, RangeSetting>();
@@ -76,6 +79,10 @@ namespace BenchNetwork
                 new AcceptableValueRange<float>(0.5f, 30f)));
             ShowNetworkInHoverText = config.Bind(ClientSection, "Show network in hover text", true,
                 "Add a line listing the station types in a station's network, with their highest level, to its hover text.");
+            ShowNetworkWhileBuilding = config.Bind(ClientSection, "Show network while building", true,
+                "While the hammer is equipped, show the range circle of every station in the network you're standing in.");
+            ToggleNetworkCirclesKey = config.Bind(ClientSection, "Toggle network circles key", new KeyboardShortcut(KeyCode.F7),
+                "Key that turns \"Show network while building\" on or off in game.");
 
             Reload();
         }

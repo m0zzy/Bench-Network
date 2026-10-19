@@ -48,6 +48,7 @@ namespace BenchNetwork
             }
 
             StationNetworks.Tick();
+            NetworkHighlight.Update();
         }
 
         private void OnDestroy()

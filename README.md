@@ -46,6 +46,12 @@ Look at any station to see its network and the best level of each station type i
 
 The line appears only when the station is linked to at least one other station.
 
+### See the whole network while building
+
+While you hold the hammer, the circle of every station in the network you're standing in lights up, so you can
+see exactly where you can build. Press **F7** to turn this on or off at any time; the game confirms with a
+message in the top left. You can change the key in the settings.
+
 ## What's shared and what isn't
 
 | | Shared through the network |
@@ -95,7 +101,7 @@ To change settings, open the in-game config menu (F1, with
 [ConfigurationManager](https://thunderstore.io/c/valheim/p/Azumatt/Official_BepInEx_ConfigurationManager/)
 installed), or edit `BepInEx/config/m0zzy.BenchNetwork.cfg`.
 
-**On a server, the server's settings win.** Everything except the last two rows below comes from the server
+**On a server, the server's settings win.** Everything except the last four rows below comes from the server
 and is locked for players. Only server admins can change it.
 
 | Setting | Default | What it does |
@@ -107,6 +113,8 @@ and is locked for players. Only server admins can change it.
 | *Station* range per level | `-1` | Extra reach for each upgrade. `-1` keeps the normal amount. |
 | Extra stations | Empty | Stations from other mods that should join networks. See below. |
 | Show network in hover text | On | Shows the network line when you look at a station. |
+| Show network while building | On | Lights up the network's circles while you hold the hammer. |
+| Toggle network circles key | F7 | Key that turns the setting above on or off in game. |
 | Network refresh interval | `2` | How often, in seconds, networks are re-checked while you hold the hammer. Best left alone. |
 
 There are range settings for the **Workbench, Forge, Stonecutter, Artisan table, Black forge** and
