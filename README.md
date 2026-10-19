@@ -137,3 +137,11 @@ happened, and your `BepInEx/LogOutput.log` file (it is inside your Gale profile 
 ## For developers
 
 How the mod works, how to build it and how releases are made: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+
+## License
+
+BenchNetwork is free and open source under the [MIT License](LICENSE): you can use, change and share it,
+including in modpacks, as long as the license notice stays with it.
+
+BenchNetwork is a fan-made mod and isn't affiliated with or endorsed by Iron Gate or Coffee Stain. Valheim is
+a trademark of its owners.
